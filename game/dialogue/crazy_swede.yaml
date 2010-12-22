@@ -1,0 +1,210 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Skwisgaar the Crazy Swede
+AVATAR_PATH: gui/portraits/crazy_swede.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Chop!  Chop!  Chopity Chop-chop?"
+    ACTIONS:
+    -   meet:
+        - skwisgaar
+    RESPONSES:
+    -   REPLY: "Chop-chop.  Chop-choppy, choppy chop."
+        GOTO: a1
+        
+    -   REPLY: "You are the woodcutter?"
+        GOTO: a2
+        
+    -   REPLY: "Sorry, I don't speak chop."
+        GOTO: end
+        
+-   ID: a1
+    SAY: "Ah, you speak the lingo!  How long have you been chopping the good\
+       \ chop?"
+    RESPONSES:
+    -   REPLY: "Oh, me?  - These hands are not suited for manual labor."
+        GOTO: a2
+        
+    -   REPLY: "I have been known to chop-chop the wood what needs choppin' --\
+           \ if you know what I mean."
+        GOTO: b1
+        
+-   ID: a2
+    SAY: "You gots to Chop what to Chop when the Choppin' needs a Chop!!!"
+    RESPONSES:
+    -   REPLY: "Yes, my man it is only us against the wood!"
+        GOTO: b1
+        
+    -   REPLY: "Chop?  What the hell are you talking about!"
+        GOTO: b2
+        
+    -   REPLY: "Enough with the chop talk!  Do you have any yeast?"
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: end
+        
+-   ID: b1
+    SAY: "Ah, so you chop the chop... but do you Chop the Chop?"
+    RESPONSES:
+    -   REPLY: "Well, that's how we did it back in Sweden!"
+        GOTO: c1
+        
+    -   REPLY: "Well, that's how we did it back in Norway!"
+        GOTO: c2
+        
+    -   REPLY: "Well, that is how we Finns get it done!"
+        GOTO: c3
+        
+-   ID: b2
+    SAY: "Chopity!!! Chop the Chop-chop!!!"
+    RESPONSES:
+    -   REPLY: "Chop?  You betcha - chop, chop!"
+        GOTO: b1
+        
+    -   REPLY: "Yeast.  Y-E-A-S-T.  For making booze.  Do you understand me?"
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: end
+        
+    -   REPLY: "Screw this, you cannot argue with a Swede!"
+        GOTO: c1
+        
+    -   REPLY: "You got a problem?  Hit in the head during the war?"
+        ACTIONS:
+        -   set_quest_variable: &id001
+                quest: beer
+                value: 0
+                variable: yeast_available
+        GOTO: permanent_failure
+        
+-   ID: c1
+    SAY: "Sweden!  Sweden?  Got no chops!!!"
+    RESPONSES:
+    -   REPLY: "But they told me you were from there."
+        GOTO: main_dialog
+        
+    -   REPLY: "Oh.. you aren't Swedish, are you?"
+        GOTO: end
+        
+    -   REPLY: "Did I say Sweden?  I meant Norway."
+        CONDITION: "quest['beer'].getValue('yeast_available')"
+        GOTO: c2
+        
+-   ID: c2
+    SAY: "N..n...Norway.  Norway...  NORWAY!  The FJORDS!!!! [sobs]"
+    RESPONSES:
+    -   REPLY: "Did I say Norway?  I meant Sweden."
+        GOTO: c1
+        
+    -   REPLY: "Hey, Hey - there it's OK.  We have Fjords right here in\
+           \ Finland."
+        GOTO: c3
+        
+    -   REPLY: "You are not pining, are you?"
+        GOTO: main_dialog
+        
+    -   REPLY: "Yeah, buddy.  You are a long way from home.  Be nice if we had\
+           \ a drink to toast to Norway."
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].getValue('yeast_available')"
+        GOTO: d
+        
+    -   REPLY: "Yeah, buddy.  You are a long way from home."
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest['beer'].getValue('yeast_available')"
+        GOTO: dprime
+        
+-   ID: c3
+    SAY: "FINLAND GOT NO FJORDS!!!!"
+    RESPONSES:
+    -   REPLY: "Whoa... no need to get excited there... uh... Chop?\
+           \ Choppy-Chop-Chop?"
+        GOTO: b2
+        
+    -   REPLY: "At least they know how to make booze!"
+        GOTO: end
+        
+    -   REPLY: "You are totally insane."
+        ACTIONS:
+        -   set_quest_variable: *id001
+        GOTO: permanent_failure
+        
+-   ID: d
+    SAY: "Ah, a toast to the King!  The King of Norway!  [looks around\
+       \ furtively]  But the Skol!  Need the bugs for the skol! "
+    RESPONSES:
+    -   REPLY: "Bugs?  You eat bugs?"
+        GOTO: e1
+        
+    -   REPLY: "Bugs?  You mean for beer?  Little yeasties?"
+        GOTO: e2
+        
+-   ID: dprime
+    SAY: "No bugs for you!"
+    RESPONSES:
+    -   REPLY: "Nuts."
+        GOTO: end
+        
+-   ID: e1
+    SAY: "HAHAA... uncultured baboon!  Baboon- bug eater!  Don't eat the bugs!\
+       \ Ferment with the bugs! "
+    RESPONSES:
+    -   REPLY: "That's what I need!  Fermentation bugs!"
+        GOTO: end
+        
+    -   REPLY: "Ah, indeed!  A fermented beverage!  Fit for a King..."
+        GOTO: d
+        
+    -   REPLY: "YES!  The bugs!  The yeast bugs!  For the Fermentation!"
+        ACTIONS:
+        -   take_stuff:
+            - Yeast
+        -   set_quest_variable:
+                quest: beer
+                value: 0
+                variable: yeast_available
+        GOTO: get_yeast
+        
+-   ID: e2
+    SAY: "Yeasties!  Belittle them not, foreign stranger!  The finest Norwegian\
+       \ yeast I have saved for 1,000 years!!"
+    RESPONSES:
+    -   REPLY: "Oh you're one to talk about Foreigers, Swede!"
+        GOTO: end
+        
+    -   REPLY: "Ah, Norwegian yeast.  Truly a permanent cultural artifact!"
+        GOTO: e1
+        
+    -   REPLY: "1000 years?"
+        ACTIONS:
+        -   set_quest_variable: *id001
+        GOTO: permanent_failure
+        
+-   ID: get_yeast
+    SAY: "My precious beasties... yeasty beasties for the fermentation!  Don't\
+       \ forget to save Culture and Civilization!"
+    RESPONSES:
+    -   REPLY: "Thanks buddy!  Skol!"
+        GOTO: end
+        
+-   ID: permanent_failure
+    SAY: "[ scowls ] Chop!  Chop!  Chopity Chop-chop.  Chop."
+    RESPONSES:
+    -   REPLY: "Go ahead and chop wood until the end of your days, nutball!"
+        GOTO: end
+        
+...

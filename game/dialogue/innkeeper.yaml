@@ -1,0 +1,311 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Jacob
+AVATAR_PATH: gui/portraits/innkeeper.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hi there, Stranger!  Welcome to Jacob's.  How can I help you?"
+    ACTIONS:
+    -   meet:
+        - jacob
+    RESPONSES:
+    -   REPLY: "I'd like a drink."
+        GOTO: buy_drink
+        
+    -   REPLY: "Nice place you got here.  What's your story?"
+        GOTO: inn_background
+        
+    -   REPLY: "Who are those two women over there?"
+        GOTO: loose_women
+        
+    -   REPLY: "I'm the bastard that's going to put you out of business!"
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: ungratitude
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Pekko's dead.  I found his body."
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: pekko_dead
+        
+    -   REPLY: "Nothing for me, thanks."
+        GOTO: end
+        
+-   ID: buy_drink
+    SAY: "Doesn't look like you got much to trade for any of my premium booze.\
+       \ Come back later when you can pay."
+    RESPONSES:
+    -   REPLY: "Alright, I'll scrounge something up."
+        GOTO: back
+        
+    -   REPLY: "Can't I run up a tab?"
+        GOTO: credit_check
+        
+-   ID: credit_check
+    SAY: "Your credit is no good here.  Now, get out before I have Dig run you\
+       \ out."
+    RESPONSES:
+    -   REPLY: "OK, OK, I was just asking."
+        GOTO: main_dialog
+        
+-   ID: inn_background
+    SAY: "Well... Dig, Enoch and I found this place some years back.  Kimmo and\
+       \ Pekko were here first, of course, but they obviously needed our help.\
+       \ The girls took a liking to it, and with the improvements we made, it\
+       \ seemed like a good place as any to set up shop. "
+    RESPONSES:
+    -   REPLY: "Who's Enoch?"
+        GOTO: explain_enoch
+        
+    -   REPLY: "Who's Dig?"
+        GOTO: explain_dig
+        
+    -   REPLY: "What improvements do you mean?"
+        GOTO: explain_steam
+        
+    -   REPLY: "What girls?"
+        GOTO: explain_girls
+        
+    -   REPLY: "Cool, this is probably the best bar in about 500 km."
+        GOTO: back
+        
+-   ID: explain_enoch
+    SAY: "Enoch was my engineer.  He worked for me before the war.  He\
+       \ outfitted this place with the steam heating system."
+    RESPONSES:
+    -   REPLY: "Oh wow, steam heat?  How does that work?"
+        GOTO: explain_steam
+        
+    -   REPLY: "Where is Enoch now?  Can I meet him?"
+        GOTO: enochs_demise
+        
+-   ID: enochs_demise
+    SAY: "Alas, he's no longer with us.  He met with an unfortunate accident.\
+       \ Luckily, he taught me how to keep the system up and running."
+    RESPONSES:
+    -   REPLY: "Accident?"
+        GOTO: enochs_accident
+        
+    -   REPLY: "So you are the only one who can maintain the steam system?"
+        GOTO: steam_maintainance
+        
+-   ID: enochs_accident
+    SAY: "Oh, you know.  Just one of those things.  Dangerous world."
+    RESPONSES:
+    -   REPLY: "Uh, I see."
+        GOTO: back
+        
+-   ID: explain_steam
+    SAY: "Well it's pretty simple in principal.  We just have a big wood fire\
+       \ melting snow.  Some of it becomes drinking water, the rest gets\
+       \ vaporized and sent around in all these steam pipes.  The each have\
+       \ little radiator attachments.  As long as we have wood, the whole place\
+       \ stays quite cozy.  It's kind of a pain to keep up though."
+    RESPONSES:
+    -   REPLY: "Can anyone just go get water there?"
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest.hasActiveQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_water
+        
+    -   REPLY: "But you can keep it running indefinitely... and no one else\
+           \ knows how it works?"
+        GOTO: steam_maintainance
+        
+    -   REPLY: "Pretty nifty."
+        GOTO: inn_background
+        
+-   ID: help_water
+    SAY: "Sure, doesn't cost us a thing.  No shortage of snow.  But I'll warn\
+       \ you, the water's been tasting a little funny lately"
+    RESPONSES:
+    -   REPLY: "Thanks for the tip."
+        GOTO: back
+        
+-   ID: steam_maintainance
+    SAY: "Yeah, just me.  I call it job security.  Like I said, it's a\
+       \ dangerous world."
+    RESPONSES:
+    -   REPLY: "That must make you pretty popular around here."
+        GOTO: popularity
+        
+    -   REPLY: "Interesting."
+        GOTO: inn_background
+        
+-   ID: popularity
+    SAY: "Ha, Ha, very funny.  Let's just say it's our own version of\
+       \ checks-and-balances with Fearless Leader Kimmo over there."
+    RESPONSES:
+    -   REPLY: "Well, we all do what we have to."
+        GOTO: inn_background
+        
+-   ID: explain_girls
+    SAY: "My daughters: Camilla and Synnove.  They were just little girls when\
+       \ the whole world went to hell.  I hope they can still have some kind of\
+       \ life."
+    RESPONSES:
+    -   REPLY: "Can I talk to Camilla?"
+        GOTO: talk_camilla
+        
+    -   REPLY: "Can I talk to Synnove?"
+        GOTO: talk_synnove
+        
+    -   REPLY: "At least you still have someone to call family.  Better than\
+           \ most of us."
+        GOTO: back
+        
+-   ID: talk_camilla
+    SAY: "Can you talk to her?  Listen to her, more likely.  She's right over\
+       \ there and is usually handling the bar when I am busy."
+    RESPONSES:
+    -   REPLY: "Oh, that's her?"
+        GOTO: back
+        
+-   ID: talk_synnove
+    SAY: "Synnove?  Maybe you can talk some sense into her.  I know, she's been\
+       \ through a lot - but haven't we all.  She's wandering around somewhere."
+    RESPONSES:
+    -   REPLY: "Alright, I will look around for her."
+        GOTO: back
+        
+-   ID: explain_dig
+    SAY: "Dig and I go way back.  We owe each other our lives more times than\
+       \ we can count.  He takes care of 'difficulties' for me."
+    RESPONSES:
+    -   REPLY: "Ah, I will stay out his way then."
+        GOTO: back
+        
+-   ID: loose_women
+    SAY: "Candi and Kalli?  They're the hospitality squad.  Harmless fun, if\
+       \ you buy them a drink."
+    RESPONSES:
+    -   REPLY: "Ah, I see."
+        GOTO: back
+        
+-   ID: pekko_dead
+    SAY: "Dead, huh.  That's a shame.  A damn shame.  He was a positive force\
+       \ around here.  How did he die?"
+    RESPONSES:
+    -   REPLY: "I am not sure, I found his body in the cistern."
+        GOTO: body_found
+        
+    -   REPLY: "Someone murdered him, and shoved his body in the cistern."
+        CONDITION: "quest['fedex'].getValue('accused_of_murder') != ''"
+        GOTO: discuss_murder
+        
+-   ID: body_found
+    SAY: "Well, if you ask me, that's a funny place to have an accident.  Enoch\
+       \ and I worked for a couple of weeks on that system.  There's really no\
+       \ way you could just fall in.  And Pekko's not the suicidal type."
+    RESPONSES:
+    -   REPLY: "So you think someone killed him?"
+        GOTO: discuss_murder
+        
+    -   REPLY: "No, I am sure it was an accident."
+        GOTO: main_dialog
+        
+-   ID: discuss_murder
+    SAY: "Damn if doesn't look like it.  I know some folks were mad at him for\
+       \ stirring up trouble, but I didn't they were the type to just snuff him\
+       \ like that.  It's a cold world, alright."
+    RESPONSES:
+    -   REPLY: "Who do you think killed him?"
+        GOTO: discuss_suspects
+        
+    -   REPLY: "I think Bart, the drunkard killed him."
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: bart
+                variable: accused_of_murder
+        GOTO: accuse_bart
+        
+    -   REPLY: "I think that dim-witted Matti killed him."
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: matti
+                variable: accused_of_murder
+        GOTO: accuse_matti
+        
+    -   REPLY: "Bart killed him, and Kimmo put him up to it."
+        CONDITION: "quest['fedex'].isGoalValue('drunkard_confesses')"
+        GOTO: accuse_kimmo
+        
+-   ID: discuss_suspects
+    SAY: "I have my theories.  But I'll be keeping them to myself.  And if I\
+       \ were you, I would drop the subject."
+    RESPONSES:
+    -   REPLY: "Really?"
+        GOTO: back
+        
+-   ID: accuse_bart
+    SAY: "Bart, huh?  Why? What's in it for him?"
+    RESPONSES:
+    -   REPLY: "I guess I should look into it more."
+        GOTO: back
+        
+    -   REPLY: "Camilla said that she saw the two of them together out in the\
+           \ parking lot the night he disappeared."
+        CONDITION: "quest['fedex'].isGoalValue('drunkard_evidence')"
+        GOTO: back
+        
+-   ID: accuse_matti
+    SAY: "You are barking up the wrong tree."
+    RESPONSES:
+    -   REPLY: "Is that what you think?  Why won't you talk about it?"
+        GOTO: back
+        
+-   ID: accuse_kimmo
+    SAY: "So.  You figured it out, huh.  Big hero, proves the Fearless Leader\
+       \ himself had his own brother killed.  Did you ever stop to think that\
+       \ revealing this information could do even further damage?"
+    RESPONSES:
+    -   REPLY: "So, this news doesn't shock you?"
+        GOTO: murder_fallout
+        
+    -   REPLY: "I never thought of it that way before..."
+        GOTO: main_dialog
+        
+-   ID: murder_fallout
+    SAY: "Survival in this world is bigger than the life of any one man; even\
+       \ an innocent man.  Justice is not my - or anyone's - primary concern."
+    RESPONSES:
+    -   REPLY: "Without justice, is survival worth anything at all?"
+        GOTO: main_dialog
+        
+-   ID: help_fedex
+    SAY: "Ah, adventure boy.  Nope, haven't seem him in a couple of days.\
+       \ Maybe check with one of the girls?"
+    RESPONSES:
+    -   REPLY: "Girls?"
+        GOTO: explain_girls
+        
+    -   REPLY: "Hmmm... no one seems to have seen him."
+        GOTO: back
+        
+-   ID: ungratitude
+    SAY: "Well aren't you just a thick slice of awesome."
+    RESPONSES:
+    -   REPLY: "I try, I try."
+        GOTO: main_dialog
+        
+...

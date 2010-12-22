@@ -1,0 +1,163 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Camilla Niitty
+AVATAR_PATH: gui/portraits/camilla.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Oh, another vagabond.  What do you want?"
+    ACTIONS:
+    -   meet:
+        - camilla
+    RESPONSES:
+    -   REPLY: "I'm looking for stuff to make beer with "
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: help_beer
+        
+    -   REPLY: "I'd like a drink."
+        GOTO: buy_drink
+        
+    -   REPLY: "I like the bar.  Do you work here?"
+        GOTO: inn_background
+        
+    -   REPLY: "Who are those two women over there?"
+        GOTO: loose_women
+        
+    -   REPLY: "Your booze monopoly is over!!"
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: ungratitude
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Did you hear? Pekko's dead.  I found his body."
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: pekko_dead
+        
+    -   REPLY: "You are as cold as... well, everything."
+        GOTO: end
+        
+-   ID: buy_drink
+    SAY: "I'm off duty right now.  Go talk to Jacob."
+    RESPONSES:
+    -   REPLY: "Oh, sorry to bother you."
+        GOTO: back
+        
+-   ID: inn_background
+    SAY: "It's my Dad's place.  He's kind of a big shot around here, so watch\
+       \ yourself.  Dig is a personal friend of mine."
+    RESPONSES:
+    -   REPLY: "Who's Dig?"
+        GOTO: explain_dig
+        
+    -   REPLY: "Jacob is your father?"
+        GOTO: explain_jacob
+        
+    -   REPLY: "Can you tell me anything about your sister?"
+        GOTO: explain_synnove
+        
+    -   REPLY: "OK, lady.. no need to get defensive."
+        GOTO: back
+        
+-   ID: explain_dig
+    SAY: "Dig is the badass at the end of the bar.  He eats fools and\
+       \ miscreants like you for breakfast."
+    RESPONSES:
+    -   REPLY: "Hmmm... I hope he's not hungry then"
+        GOTO: back
+        
+-   ID: explain_jacob
+    SAY: "Jacob is my father.  He runs this place.  He's basically the number\
+       \ two guy around here, after Kimmo."
+    RESPONSES:
+    -   REPLY: "Well, maybe I should talk to him if he's so important."
+        GOTO: back
+        
+-   ID: explain_synnove
+    SAY: "Ah, Synnove.  She's not really... you know.... with us.  I mean she\
+       \ is WITH us, with us, but not really all there.  But she's not crazy...\
+       \ just confused.  Oh, I probably said too much."
+    RESPONSES:
+    -   REPLY: "Sounds about par for the course."
+        GOTO: back
+        
+-   ID: help_beer
+    SAY: "Why don't you just buy... Oh.  OH.  Is that your little scheme?  If I\
+       \ were you I would just drop.  I don't think my dad will take kindly to\
+       \ competition."
+    RESPONSES:
+    -   REPLY: "Ooops."
+        GOTO: end
+        
+-   ID: loose_women
+    SAY: "Those two?  Cande and Kalli.  They're trouble.  Watch your wallet\
+       \ around them.  I mean, if we still had wallets.  And money."
+    RESPONSES:
+    -   REPLY: "Ha, I can handle myself.  Thanks for the tip though."
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "Pekko?  Yeah, he was here a couple of nights ago.  Talking to Bart."
+    RESPONSES:
+    -   REPLY: "Really?  You are the only person who's seen him lately.  Did he\
+           \ say anything about where he was going or what he was doing?"
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: true
+                variable: drunkard_evidence
+        GOTO: discuss_pekko
+        
+-   ID: discuss_pekko
+    SAY: "He didn't say anything directly... he mentioned getting ready to go\
+       \ out on one of his expeditions, but he wasn't going to leave until\
+       \ tomorrow.  He and Bart walked off together.  I saw them over by the\
+       \ cistern door, where that Matti guy puts all the snow."
+    RESPONSES:
+    -   REPLY: "Wow, I better check that out."
+        GOTO: back
+        
+-   ID: pekko_dead
+    SAY: "Dead?  Gee, that's awful.  I enjoyed his stories of the wilderness...\
+       \ I guess I am the last person to see him alive."
+    RESPONSES:
+    -   REPLY: "Well, maybe the second-to-last."
+        GOTO: back
+        
+    -   REPLY: "Come to think of it... were you alone here that night you last\
+           \ saw Pekko?"
+        GOTO: discuss_alibi
+        
+-   ID: discuss_alibi
+    SAY: "You think I had something to do with this?  Well... impossible... I\
+       \ was here all night.  Dig and the girls were here too.  Ask'em."
+    RESPONSES:
+    -   REPLY: "I suppose I'll do that."
+        GOTO: main_dialog
+        
+-   ID: ungratitude
+    SAY: "You little rat!!! This is our business!!  Our livelyhood!!!  I'll\
+       \ KILL You!!!1"
+    RESPONSES:
+    -   REPLY: "Hahaha... catch me if you can!!!"
+        GOTO: end
+        
+...

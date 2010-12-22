@@ -1,0 +1,168 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Synnove Niitty
+AVATAR_PATH: gui/portraits/synnove.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hi there!  I don't recognize you.  Are you new here?"
+    RESPONSES:
+    -   REPLY: "Yes, I am new.  And who are you?"
+        CONDITION: "not pc.met('synnove')"
+        GOTO: meeting
+        
+    -   REPLY: "You don't remember me?  We just talked!"
+        CONDITION: "pc.met('synnove')"
+        GOTO: future_meetings
+        
+    -   REPLY: "I'm looking for stuff to make beer with "
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: help_beer
+        
+    -   REPLY: "I'm got my beer made, finally!"
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: gratitude
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Never mind, thought you were someone else."
+        GOTO: end
+        
+-   ID: meeting
+    SAY: "My name's Synnove.  I live here."
+    ACTIONS:
+    -   meet:
+        - synnove
+    RESPONSES:
+    -   REPLY: "Good to meet you.  What do you do around here."
+        GOTO: synnove_job
+        
+    -   REPLY: "Ah."
+        GOTO: back
+        
+-   ID: synnove_job
+    SAY: "Do?"
+    RESPONSES:
+    -   REPLY: "Oh, never mind."
+        GOTO: main_dialog
+        
+-   ID: future_meetings
+    SAY: "Oh, I don't think so.  I would have definitely remembered you if we\
+       \ hadn't met."
+    RESPONSES:
+    -   REPLY: "You would have? But... how ... would... uh.  What?"
+        GOTO: back
+        
+-   ID: help_beer
+    SAY: "Hmmm... beer.  Doesn't it come in bottles?  Anyway, I am always happy\
+       \ to give intimate details of our home to strangers, what are you looking\
+       \ for?"
+    RESPONSES:
+    -   REPLY: "Where do you folks get water from.  The more pure, the better."
+        GOTO: help_water
+        
+    -   REPLY: "Some kind of grain, or fruit or something."
+        GOTO: help_grain
+        
+    -   REPLY: "I'm really looking for some brewer's yeast."
+        GOTO: help_yeast
+        
+    -   REPLY: "I need a pot to cook the mash in."
+        GOTO: help_pot
+        
+    -   REPLY: "It would be great if I had some bottles to put the brew in!"
+        GOTO: help_bottles
+        
+    -   REPLY: "I think I can handle it from here."
+        GOTO: back
+        
+-   ID: help_water
+    SAY: "I would think that you could find water in a water tank."
+    RESPONSES:
+    -   REPLY: "Well, the water has to be pure to make good beer.  Where do you\
+           \ folks keep purified water?"
+        GOTO: expand_water
+        
+    -   REPLY: "Yes, you would think that..."
+        GOTO: back
+        
+-   ID: expand_water
+    SAY: "In the purified water tank?"
+    RESPONSES:
+    -   REPLY: "Never mind."
+        GOTO: help_beer
+        
+-   ID: help_grain
+    SAY: "You mean like stuff to cook with?  That goes in beer?"
+    RESPONSES:
+    -   REPLY: "Yes, the yeast need to eat sugars to make alcohol."
+        GOTO: expand_grain
+        
+    -   REPLY: "You really aren't much help, are you?"
+        GOTO: back
+        
+-   ID: expand_grain
+    SAY: "Oh, I don't think I've seen any sugar in years."
+    RESPONSES:
+    -   REPLY: "It doesn't have to be purified sugar..."
+        GOTO: help_beer
+        
+-   ID: help_yeast
+    SAY: "Oh, Skwisgaar has some.  He talks about it all the time."
+    RESPONSES:
+    -   REPLY: "The wood cutter?  You have conversations with him?  Figures."
+        GOTO: back
+        
+-   ID: help_pot
+    SAY: "Nope, don't know where you can find anything like that.  Don't you\
+       \ have one?"
+    RESPONSES:
+    -   REPLY: "No, if I did, I wouldn't... forget it."
+        GOTO: back
+        
+-   ID: help_bottles
+    SAY: "Oh yeah, like I said!  Bottles!  That's what beer comes in.  Or does\
+       \ it come only in cans now?"
+    RESPONSES:
+    -   REPLY: "You are a strange lady"
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "Who's Pekko?  I never heard of him."
+    RESPONSES:
+    -   REPLY: "Kimmo's brother.  You never heard of him?"
+        GOTO: back
+        
+-   ID: gratitude
+    SAY: "Wow, that's great!  But where did you find it?"
+    RESPONSES:
+    -   REPLY: "I made it!"
+        GOTO: make_beer
+        
+-   ID: make_beer
+    SAY: "Oh, you are so silly.  Make beer.  Indeed.  I suppose you think I was\
+       \ born yesterday."
+    RESPONSES:
+    -   REPLY: "Uh, yeah.  You got me.  'Just Kidding'."
+        GOTO: main_dialog
+        
+...

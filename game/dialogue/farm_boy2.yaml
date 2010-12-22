@@ -1,0 +1,62 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Rasmus
+AVATAR_PATH: gui/portraits/farm_boy_temp.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hi, I'm Rasmus.  What can I do for you?"
+    RESPONSES:
+    -   REPLY: "I'm looking for stuff to make beer with "
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: help_beer
+        
+    -   REPLY: "Tell me about the farm"
+        GOTO: describe_farm
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Oh, I was looking for Sami."
+        GOTO: end
+        
+-   ID: help_beer
+    SAY: "Not my place to hand out any stuff.  I just work here.  Talk to\
+       \ Manslow."
+    RESPONSES:
+    -   REPLY: "Alright."
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "Kimmo's brother?  Nope, he never comes down here, and we basically\
+       \ live here."
+    RESPONSES:
+    -   REPLY: "At least it's warm."
+        GOTO: back
+        
+-   ID: describe_farm
+    SAY: "It was just an empty lot before.  I don't envy the folks who had to\
+       \ break up all this ground."
+    RESPONSES:
+    -   REPLY: "That must have been some effort."
+        GOTO: back
+        
+...

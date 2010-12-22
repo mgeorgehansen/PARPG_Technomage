@@ -1,0 +1,111 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Anyone
+AVATAR_PATH: gui/portraits/npc.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hello.  How can I help you?"
+    RESPONSES:
+    -   REPLY: "I'm looking for stuff to make beer with "
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: help_beer
+        
+    -   REPLY: "I'm the beer savior, remember?"
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: gratitude
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Whoa!  It talks!  Never mind"
+        GOTO: end
+        
+-   ID: help_beer
+    SAY: "I am always happy to give intimate details of our home to strangers,\
+       \ shoot!"
+    RESPONSES:
+    -   REPLY: "Where do you folks get water from.  The more pure, the better."
+        GOTO: help_water
+        
+    -   REPLY: "Some kind of grain, or fruit or something."
+        GOTO: help_grain
+        
+    -   REPLY: "I'm really looking for some brewer's yeast."
+        GOTO: help_yeast
+        
+    -   REPLY: "I need a pot to cook the mash in."
+        GOTO: help_pot
+        
+    -   REPLY: "It would be great if I had some bottles to put the brew in!"
+        GOTO: help_bottles
+        
+    -   REPLY: "I think I can handle it from here."
+        GOTO: back
+        
+-   ID: help_water
+    SAY: "Oh, that is the one thing we have plenty of.  We have an old tanker\
+       \ trunk that we shovel the snow in and melt it.  You can see it from up\
+       \ here, but you have to go downstairs to tap it.  But the water's been\
+       \ tasting a little funny lately."
+    RESPONSES:
+    -   REPLY: "Great, that's a huge help."
+        GOTO: back
+        
+-   ID: help_grain
+    SAY: "You could try the farm, and there should be some food in the\
+       \ storerooms"
+    RESPONSES:
+    -   REPLY: "Thanks, I'll try that."
+        GOTO: back
+        
+-   ID: help_yeast
+    SAY: "You got me.  I wonder if there is even any left at all."
+    RESPONSES:
+    -   REPLY: "Someone must have some!"
+        GOTO: back
+        
+-   ID: help_pot
+    SAY: "Did you try the kitchen?  Or the storerooms?"
+    RESPONSES:
+    -   REPLY: "Uh, yeah.  I guess that was obvious."
+        GOTO: back
+        
+-   ID: help_bottles
+    SAY: "All the random junk is downstairs in old parking lot.  We have our\
+       \ own little junkyard."
+    RESPONSES:
+    -   REPLY: "Oooh... there is probably lots of good stuff down there."
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "Pekko... I thought he was out scouting?  Did you try the Inn?"
+    RESPONSES:
+    -   REPLY: "OK, the Inn, thanks."
+        GOTO: back
+        
+-   ID: gratitude
+    SAY: "Well aren't you just a thick slice of awesome."
+    RESPONSES:
+    -   REPLY: "I try, I try."
+        GOTO: main_dialog
+        
+...

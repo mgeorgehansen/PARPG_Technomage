@@ -1,0 +1,279 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Helja
+AVATAR_PATH: gui/portraits/quartermaster.jpg
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hello, there!  A new addition to the labor pool, I see."
+    ACTIONS:
+    -   meet:
+        - helja
+    RESPONSES:
+    -   REPLY: "What do you do around here?"
+        GOTO: expound_quartermaster
+        
+    -   REPLY: "You're the Quartermaster?  I bet you can help me with some\
+           \ requisitions?"
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: pre_help_beer
+        
+    -   REPLY: "You going to help me distribute this new beer?"
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: beer_network
+        
+    -   REPLY: "You haven't seen Pekko around lately, have you?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: true
+                variable: check_bart_left
+        GOTO: help_fedex
+        
+    -   REPLY: "Labor pool?  I forgot my suit."
+        GOTO: end
+        
+-   ID: expound_quartermaster
+    SAY: "I am the like the supply sergeant.  I am in charge of all the\
+       \ communal goods - particularly food."
+    RESPONSES:
+    -   REPLY: "Sounds like an important job.  Are you bribe-able?"
+        GOTO: bribe_comment
+        
+    -   REPLY: "Really?  Because I am looking for some items to brew some\
+           \ beer..."
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: pre_help_beer
+        
+-   ID: bribe_comment
+    SAY: "Oh, funny. [narrows eyes] But I do like to help people who help\
+       \ themselves.  Like God."
+    RESPONSES:
+    -   REPLY: "So you accept burnt offerings?"
+        GOTO: main_dialog
+        
+-   ID: pre_help_beer
+    SAY: "Hey, I don't just give stuff away.  You have to have a requisition\
+       \ note from Kimmo, or at least trade something. "
+    RESPONSES:
+    -   REPLY: "Who's Kimmo?"
+        GOTO: describe_kimmo
+        
+    -   REPLY: "Well, I don't have a requisition... I am going to make some\
+           \ beer."
+        GOTO: elaborate_beer
+        
+-   ID: describe_kimmo
+    SAY: "Kimmo is the leader of our merry band.  He's my boss -- the boss of\
+       \ all of us, currently."
+    RESPONSES:
+    -   REPLY: "What do you mean, currently?"
+        GOTO: describe_rivalry
+        
+    -   REPLY: "So do you think Kimmo would let me have some stuff to make\
+           \ beer?"
+        GOTO: elaborate_beer
+        
+-   ID: elaborate_beer
+    SAY: "Beer, huh.  That might undermine Jacob's inn a bit.  Kimmo would\
+       \ probably approve of that."
+    RESPONSES:
+    -   REPLY: "So you will help me?"
+        GOTO: help_beer
+        
+    -   REPLY: "Why would Kimmo want to undermine Jacob?"
+        GOTO: describe_rivalry
+        
+-   ID: describe_rivalry
+    SAY: "Well, Jacob -- I guess you would call him Kimmmo's primary rival for\
+       \ leadership."
+    RESPONSES:
+    -   REPLY: "Do you think he'll try to take over?"
+        GOTO: elaborate_rivalry
+        
+    -   REPLY: "Interesting.  And whom do you support?"
+        GOTO: which_side
+        
+    -   REPLY: "So, Kimmo would want me to give the place another source of\
+           \ beer, right?"
+        GOTO: help_beer
+        
+    -   REPLY: "Ugh, small town politics.  Say no more."
+        GOTO: main_dialog
+        
+-   ID: which_side
+    SAY: "Well, most of us owe Kimmo our lives.  But I'm no fighter.  I've\
+       \ survived this long without getting involved in petty power struggles.\
+       \ I am good at what I do."
+    RESPONSES:
+    -   REPLY: "But you are not against a little underhanded move against\
+           \ Jacob..."
+        GOTO: help_beer
+        
+    -   REPLY: "So, playing both sides against the middle.  What if Jacob makes\
+           \ a move?"
+        GOTO: elaborate_rivalry
+        
+-   ID: elaborate_rivalry
+    SAY: "I don't think he'll make a move... as long as we stay here."
+    RESPONSES:
+    -   REPLY: "Why would you move?  This place is awesome!"
+        GOTO: why_move
+        
+-   ID: why_move
+    SAY: "Pekko's got this idea that the winters are going to get worse.  He\
+       \ says Lapland up north is already glaciated, and it's only a matter of\
+       \ time before this place is totally frozen out."
+    RESPONSES:
+    -   REPLY: "So you will help me make some beer?"
+        GOTO: help_beer
+        
+    -   REPLY: "And away from the Paatalo, Kimmo's power base is weak.  Who do\
+           \ you support?"
+        GOTO: which_side
+        
+-   ID: help_beer
+    SAY: "Well, what do you need exactly?"
+    RESPONSES:
+    -   REPLY: "I need some pure water."
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_water_clean
+        
+    -   REPLY: "I need some pure water."
+        CONDITION: "not quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_water_dirty
+        
+    -   REPLY: "The basis of the the brew is some source of sugar, like grain\
+           \ or potatoes."
+        GOTO: help_grain
+        
+    -   REPLY: "A yeast culture would really make the thing less dicey"
+        GOTO: help_yeast
+        
+    -   REPLY: "Of course, I'll need something to cook the mash in..."
+        GOTO: help_pot
+        
+    -   REPLY: "When it's all done, I'll need to put the beer in something"
+        GOTO: help_bottles
+        
+    -   REPLY: "That should about do it, thanks."
+        GOTO: back
+        
+-   ID: help_water_dirty
+    SAY: "You can have all the water you want... but people have been\
+       \ complaining about the taste lately.  It should probably be checked\
+       \ out."
+    RESPONSES:
+    -   REPLY: "Oh, that's interesting."
+        GOTO: back
+        
+-   ID: help_water_clean
+    SAY: "Water is unrestricted.  Go downstairs and draw a bucket from the\
+       \ cistern, it's filtered."
+    RESPONSES:
+    -   REPLY: "Water, check."
+        GOTO: back
+        
+-   ID: help_grain
+    SAY: "Well, food.  Now that is not easy to get.  I can't authorize you any\
+       \ grain.  But maybe there are some old potatoes around..."
+    RESPONSES:
+    -   REPLY: "Potatoes? I guess that's not too bad. Where would I find some?"
+        GOTO: help_potatoes
+        
+    -   REPLY: "Grain would really be the best... where do you get it?"
+        GOTO: help_farm
+        
+    -   REPLY: "OK, I'll see what I can scrounge up"
+        GOTO: back
+        
+-   ID: help_yeast
+    SAY: "You know... Skwisgaar is always babbling about yeast and stuff.  Good\
+       \ luck getting a straight answer out of him though."
+    RESPONSES:
+    -   REPLY: "Skwisgaar... is that the wood chopper?"
+        GOTO: wood_chopper
+        
+-   ID: help_pot
+    SAY: "Well, I got a pot.  But I can't just give it up.  What will you give\
+       \ me for it?"
+    RESPONSES:
+    -   REPLY: "Well, I got this pocket knife... would that do?"
+        ACTIONS:
+        -   give_stuff:
+            - pocket_knife
+        -   take_stuff:
+            - brew_pot
+        GOTO: trade_knife
+        
+    -   REPLY: "No deal.  I'll find my own."
+        GOTO: back
+        
+-   ID: help_bottles
+    SAY: "Junkyard.  Also unrestricted.  Help yourself."
+    RESPONSES:
+    -   REPLY: "Thanks."
+        GOTO: back
+        
+-   ID: trade_knife
+    SAY: "Let me see it. [You hand over the knife].  Humh.  A little used.\
+       \ But OK, I like you."
+    RESPONSES:
+    -   REPLY: "It's a deal then."
+        GOTO: help_beer
+        
+-   ID: wood_chopper
+    SAY: "Yeah, the wood chopper.  Came over to help us against the Russkies.\
+       \ From Sweden or something.  I don't think he's quite right in the head."
+    RESPONSES:
+    -   REPLY: "I'll keep that in mind"
+        GOTO: help_beer
+        
+-   ID: help_potatoes
+    SAY: "There should be some old ones in that storeroom back there.  Probably\
+       \ won't be missed."
+    RESPONSES:
+    -   REPLY: "Wow, thanks.  You won't regret this."
+        GOTO: back
+        
+-   ID: help_farm
+    SAY: "I'm sorry.  I can't really disclose that information.  That farm is\
+       \ our life."
+    RESPONSES:
+    -   REPLY: "Hey, it's cool.  I am not looking for trouble."
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "He was here a couple of days ago, getting provisioned for one of his\
+       \ excursions.  He should be back by now though."
+    RESPONSES:
+    -   REPLY: "So the you last saw him, he was leaving the compound."
+        GOTO: back
+        
+-   ID: beer_network
+    SAY: "I'll think about it.  Let's see if things quiet down."
+    RESPONSES:
+    -   REPLY: "Alright, Helja."
+        GOTO: main_dialog
+        
+...

@@ -1,0 +1,61 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Sami
+AVATAR_PATH: gui/portraits/farm_boy_temp.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hi, I'm Sami.  How can I help you?"
+    RESPONSES:
+    -   REPLY: "I'm looking for stuff to make beer with "
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: help_beer
+        
+    -   REPLY: "Tell me about the farm"
+        GOTO: describe_farm
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Oh, I was looking for Rasmus."
+        GOTO: end
+        
+-   ID: help_beer
+    SAY: "Oh, you better ask the boss about that."
+    RESPONSES:
+    -   REPLY: "OK, I will."
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "No.. but we pretty much stay here on the farm."
+    RESPONSES:
+    -   REPLY: "I see."
+        GOTO: back
+        
+-   ID: describe_farm
+    SAY: "Manslow figured out that the only way to keep things growing in the\
+       \ cold was to build a greenhouse. Luckily, someone managed to find all\
+       \ this clear plexiglass."
+    RESPONSES:
+    -   REPLY: "Wow, nice."
+        GOTO: back
+        
+...

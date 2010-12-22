@@ -1,0 +1,56 @@
+---
+# A schema to validate dialogue scripts
+# to validate a script run:
+#
+# kwalify -lf dialogue-schema.yaml dialogue.yaml
+
+name: Dialogue
+type: map
+mapping:
+    "NPC_NAME":
+        type: str
+        required: yes
+    "AVATAR_PATH":
+        type: str
+        required: yes
+        pattern: "/^((\\.\\./|[a-zA-Z0-9_/\\-\\\\])*\\.[a-zA-Z0-9]+)$/"
+    "START_SECTION":
+        type: str
+        required: yes
+        pattern: &section_id_regex "/[a-z][a-z_]*/"
+    "SECTIONS":
+        type: seq
+        required: yes
+        sequence:
+            - type: map
+              mapping:
+                "ID":
+                    type: str
+                    required: yes
+                    pattern: *section_id_regex
+                "SAY":
+                    type: str
+                    required: yes
+                    
+                "ACTIONS":
+                    &actions
+                    type: seq
+                    required: no
+                    sequence:
+                        - type: any
+                          required: no
+                "RESPONSES":
+                    type: seq
+                    required: yes
+                    sequence:
+                        - type: map
+                          required: no
+                          mapping:
+                            "REPLY":
+                                type: str
+                                required: yes
+                            "ACTIONS":
+                                *actions
+                            "CONDITION":
+                                type: str
+                                required: no

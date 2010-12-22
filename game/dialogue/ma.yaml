@@ -1,0 +1,129 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Ma Niitty
+AVATAR_PATH: gui/portraits/ma.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Why hello there... I don't recognize your face..."
+    ACTIONS:
+    -   meet:
+        - ma
+    RESPONSES:
+    -   REPLY: "I am trying to make beer, can you help me?"
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: help_beer
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "I'm new here, I don't believe we've been introduced?"
+        GOTO: introduce_ma
+        
+    -   REPLY: "Do you need a light?"
+        GOTO: light_cigarette
+        
+    -   REPLY: "I am sorry to tell you... Pekko's dead"
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: dead_pekko
+        
+    -   REPLY: "Sorry to bother you, I didn't realize you were awake"
+        GOTO: end
+        
+-   ID: dead_pekko
+    SAY: "Oh, don't be silly.  I'm sure he is just off in the wilderness again"
+    RESPONSES:
+    -   REPLY: "No, really, I found the body"
+        GOTO: found_body
+        
+    -   REPLY: "Oh, maybe you are right. I'll keep looking.  You take care\
+           \ now."
+        GOTO: end
+        
+-   ID: found_body
+    SAY: "Well, I am sure you are mistaken."
+    RESPONSES:
+    -   REPLY: "You must believe me, I'm quite sure."
+        GOTO: dead_pekko
+        
+    -   REPLY: "I suppose I might be."
+        GOTO: end
+        
+-   ID: help_beer
+    SAY: "Beer?  Why don't you just get it at the supermarket?"
+    RESPONSES:
+    -   REPLY: "I don't think... Oh, never mind."
+        GOTO: back
+        
+-   ID: introduce_ma
+    SAY: "My name's Aino.  But everyone calls me 'Ma'.  Kimmo and Pekko are my\
+       \ boys. Good boys, both of 'em"
+    RESPONSES:
+    -   REPLY: "Oh, tell me about your son, Kimmo."
+        GOTO: talk_kimmo
+        
+    -   REPLY: "Oh, tell me about your son, Pekko."
+        GOTO: talk_pekko
+        
+    -   REPLY: "You must be very proud."
+        GOTO: main_dialog
+        
+-   ID: talk_kimmo
+    SAY: "Ah, Kimmo.  He is done such a good job here.  Everyone looks up to\
+       \ him, don't you think?  He's really a hero"
+    RESPONSES:
+    -   REPLY: "He's a born leader."
+        GOTO: back
+        
+-   ID: talk_pekko
+    SAY: "My Pekko.  Always the dreamer.  He spends so much time out in the\
+       \ woods, in his own head... He thinks we should move everyone!  "
+    RESPONSES:
+    -   REPLY: "Why does he want to leave?"
+        GOTO: explain_leaving
+        
+-   ID: explain_leaving
+    SAY: "He doesn't think it's going to be a very Nice Age.  It's just them\
+       \ crazy idea of the week.   Kimmo will keep us safe here."
+    RESPONSES:
+    -   REPLY: "Ah. [you nod understandingly]"
+        GOTO: main_dialog
+        
+-   ID: light_cigarette
+    SAY: "For the cigarette?  No, they last longer this way.  I've had this one\
+       \ for about 4 years now..."
+    RESPONSES:
+    -   REPLY: "Facinating."
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "Ah, Pekko.  The apple of my eye.  Do you know where he is?"
+    RESPONSES:
+    -   REPLY: "Well, actually... forget it."
+        GOTO: back
+        
+-   ID: gratitude
+    SAY: "Well aren't you just a thick slice of awesome."
+    RESPONSES:
+    -   REPLY: "I try, I try."
+        GOTO: main_dialog
+        
+...

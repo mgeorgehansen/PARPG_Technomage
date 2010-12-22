@@ -1,0 +1,7 @@
+notebook_background.png is the background that goes under everything
+mainatt_background.png is the background that goes under main attributes (name and rest)
+stats_background.png is the background that goes under primary stats
+character* and *arrow* files are buttons that needs to be placed carefully
+"plain" denotes version displayed as usual, "hovered" - on hover and  "background" are above files without descriptions on them, may be used as "on click" versions. 
+*stats_arrows (up and down) are different things than left and right arrows. First one are to increase/decrease stats, the others are to move between pages of the notebook
+

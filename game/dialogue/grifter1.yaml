@@ -1,0 +1,75 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Cali
+AVATAR_PATH: gui/portraits/grifter_temp.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hi there stranger.  Buy a gal a drink?"
+    ACTIONS:
+    -   meet:
+        - cali
+    RESPONSES:
+    -   REPLY: "I'm looking for stuff to make beer with. "
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions')"
+        GOTO: help_beer
+        
+    -   REPLY: "My new beer is a great success..."
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: gratitude
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Sorry, I'm broke."
+        GOTO: end
+        
+-   ID: help_beer
+    SAY: "Trying to horn in on old Jacob here, huh?  I wouldn't if I were you."
+    RESPONSES:
+    -   REPLY: "Hey, we all do what we have to.  I'm sure you understand."
+        GOTO: back
+        
+-   ID: help_fedex
+    SAY: "[sigh] The cute one?.  He's in here all the time.  I guess it has\
+       \ been a couple days since I've seen him."
+    RESPONSES:
+    -   REPLY: "Yes, no one has seen him for a couple of days."
+        GOTO: back
+        
+    -   REPLY: "Was Camilla here all night the last time you saw Pekko here?"
+        CONDITION: "quest['fedex'].isGoalValue('drunkard_evidence')"
+        GOTO: check_alibi
+        
+-   ID: check_alibi
+    SAY: "Hmmmm... Yeah, I think so.  She's here almost every night."
+    RESPONSES:
+    -   REPLY: "OK, thanks."
+        GOTO: main_dialog
+        
+-   ID: gratitude
+    SAY: "Huh.  Well, how about that.  You won't forget your friend Cali when\
+       \ you are famous, right?"
+    RESPONSES:
+    -   REPLY: "No way, babe."
+        GOTO: main_dialog
+        
+...

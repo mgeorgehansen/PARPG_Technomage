@@ -1,0 +1,165 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Friendly NPC
+AVATAR_PATH: gui/portraits/npc.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Things are tough around here, let me tell you our problems"
+    RESPONSES:
+    -   REPLY: "Sure, tell me all about it"
+        CONDITION: "not\
+           \ set(pc.finished_quests).intersection(['raiders','well','beer'])"
+        GOTO: listen_more
+        
+    -   REPLY: "That sounds boring. Bye."
+        GOTO: end
+        
+-   ID: listen_more
+    SAY: "Raiders stole our cattle, our well was poisoned, and the beer is all\
+       \ gone!"
+    RESPONSES:
+    -   REPLY: "Tell me about the raiders"
+        CONDITION: "pc.canAcceptQuest('raiders')"
+        GOTO: elaborate_raiders
+        
+    -   REPLY: "I've taken care of the raiders"
+        CONDITION: "pc.hasSatisfiedQuest('raiders')"
+        ACTIONS:
+        -   complete_quest:
+            - raiders
+        GOTO: complete_raiders
+        
+    -   REPLY: "Tell me about the well"
+        CONDITION: "pc.canAcceptQuest('well')"
+        GOTO: elaborate_well
+        
+    -   REPLY: "I have returned with the antidote"
+        CONDITION: "pc.hasSatisfiedQuest('well')"
+        ACTIONS:
+        -   complete_quest:
+            - well
+        GOTO: complete_well
+        
+    -   REPLY: "Tell me about the beer"
+        CONDITION: "pc.canAcceptQuest('beer')"
+        GOTO: elaborate_beer
+        
+    -   REPLY: "Three cheers the beer is here!"
+        CONDITION: "pc.hasSatisfiedQuest('beer')"
+        ACTIONS:
+        -   complete_quest:
+            - beer
+        GOTO: complete_beer
+        
+    -   REPLY: "Guard, I have solved all your problems"
+        CONDITION: "pc.finished_quests == set(['raiders','well','beer'])"
+        GOTO: all_done
+        
+    -   REPLY: "Good luck with that"
+        GOTO: end
+        
+-   ID: elaborate_raiders
+    SAY: "They mostly come at night... mostly."
+    RESPONSES:
+    -   REPLY: "I can help you, for a price"
+        CONDITION: "pc.canAcceptQuest('raiders')"
+        ACTIONS:
+        -   start_quest:
+            - raiders
+        GOTO: quest_raiders
+        
+    -   REPLY: "What was that other stuff you were talking about again?"
+        GOTO: back
+        
+    -   REPLY: "That sounds too dangerous for me, good luck!"
+        GOTO: end
+        
+-   ID: quest_raiders
+    SAY: "Thank you so much, these raiders have terrified our village for too\
+       \ long!"
+    RESPONSES:
+    -   REPLY: "Quit your yammering, those raiders won't be a problem anymore."
+        GOTO: listen_more
+        
+-   ID: complete_raiders
+    SAY: "Thank you for defeating those evil doers"
+    RESPONSES:
+    -   REPLY: "Pffft, it was easy"
+        GOTO:  listen_more
+        
+-   ID: elaborate_well
+    SAY: "A foul and dreadful toxin has contaminated our water well. Rumors\
+       \ tell of an antidote. If only someone could find it."
+    RESPONSES:
+    -   REPLY: "Wait a second... I'm someone! I will fix your well."
+        CONDITION: "pc.canAcceptQuest('well')"
+        ACTIONS:
+        -   start_quest:
+            - well
+        GOTO: quest_well
+        
+    -   REPLY: "Tell me about that other stuff"
+        GOTO: back
+        
+    -   REPLY: "You're scaring me, bye"
+        GOTO: end
+        
+-   ID: quest_well
+    SAY: "You are a brave hero indeed, water bringer."
+    RESPONSES:
+    -   REPLY: "Fear not, gentle villager. I will return shortly with the\
+           \ antidote."
+        GOTO: listen_more
+        
+-   ID: complete_well
+    SAY: "Thank heavens now the orphans will have water to drink"
+    RESPONSES: []
+-   ID: elaborate_beer
+    SAY: "After this keg, and that keg, there is only one keg left! Something\
+       \ must be done."
+    RESPONSES:
+    -   REPLY: "Running out of beer is no laughing matter. I'll run to the\
+           \ brewery for more"
+        CONDITION: "pc.canAcceptQuest('beer')"
+        ACTIONS:
+        -   start_quest:
+            - beer
+        GOTO: quest_beer
+        
+    -   REPLY: "Tell me about all that other stuff"
+        GOTO: back
+        
+-   ID: quest_beer
+    SAY: "I do not know what we would have done without you."
+    RESPONSES:
+    -   REPLY: "It's my pleasure"
+        GOTO: listen_more
+        
+-   ID: complete_beer
+    SAY: "Thank heavens now the orphans will have beer to drink"
+    RESPONSES:
+    -   REPLY: "All in a day's work, now gimme some! *glug*"
+        GOTO: listen_more
+        
+-   ID: all_done
+    SAY: "For saving our village, I will give you the prized McGuffin. Thank\
+       \ you, Player Character"
+    RESPONSES:
+    -   REPLY: "I am so awesome"
+        GOTO: end
+        
+...

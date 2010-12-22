@@ -1,0 +1,458 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Janie
+AVATAR_PATH: gui/portraits/fguard.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Halt, identify yourself!"
+    RESPONSES:
+    -   REPLY: "Whoa, easy with that weapon, sister"
+        CONDITION: "not pc.met('janie')"
+        GOTO: first_impression
+        
+    -   REPLY: "I'm the beer savior, baby!"
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: gratitude
+        
+    -   REPLY: "It's me - don't you remember?"
+        CONDITION: "pc.met('janie')"
+        GOTO: old_pals
+        
+    -   REPLY: "Sorry, didn't mean to startle you. I'll just be moving along\
+           \ now."
+        GOTO: end
+        
+-   ID: first_impression
+    SAY: "Hey Stranger.  You're new around here, I don't recognize your\
+       \ face..."
+    ACTIONS:
+    -   meet:
+        - janie
+    RESPONSES:
+    -   REPLY: "Yeah, just blew in with the last storm."
+        CONDITION: "not quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex')"
+        GOTO: elaborate_fedex
+        
+    -   REPLY: "But one night with me, babe, and you'll never forget it"
+        GOTO: rude_comeon
+        
+-   ID: elaborate_fedex
+    SAY: "Well, maybe you can do me a favor.   I have this package I need\
+       \ delivered to Pekko.  But you gotta be casual about it.  No one can know\
+       \ you why you are looking for him."
+    RESPONSES:
+    -   REPLY: "Me?  Why Me?"
+        GOTO: why_me
+        
+    -   REPLY: "Why the secrecy?"
+        GOTO: why_secret
+        
+    -   REPLY: "What's in it for me?"
+        GOTO: what_do_i_get
+        
+    -   REPLY: "Whatever, I need an excuse to wander around anyway."
+        ACTIONS:
+        -   start_quest:
+            - fedex
+        -   take_stuff:
+            - Box
+        GOTO: quest_fedex
+        
+    -   REPLY: "Find another errand boy."
+        GOTO: end
+        
+-   ID: why_me
+    SAY: "No one knows you.  You're new here.  You can be expected to be\
+       \ wandering around being nosy."
+    RESPONSES:
+    -   REPLY: "I'm still not convinced."
+        GOTO: back
+        
+    -   REPLY: "Beats watching nuthin' on TV."
+        ACTIONS:
+        -   start_quest:
+            - fedex
+        -   take_stuff:
+            - Box
+        GOTO: quest_fedex
+        
+-   ID: why_secret
+    SAY: "Look buddy, it's no questions asked.  You think you are the only\
+       \ frozen bum to come wandering in here?"
+    RESPONSES:
+    -   REPLY: "Bum?  You don't even know who I am."
+        GOTO: why_me
+        
+    -   REPLY: "Really.  I remain unswayed by your logic, but you are pleasing\
+           \ to the eye so keep talking."
+        GOTO: back
+        
+    -   REPLY: "No need to get testy, I'll do it."
+        ACTIONS:
+        -   start_quest:
+            - fedex
+        -   take_stuff:
+            - Box
+        GOTO: quest_fedex
+        
+-   ID: what_do_i_get
+    SAY: "Everybody wants something, huh.  I suppose my undying gratitude won't\
+       \ cut it?  How about a beaver pelt?  They make great hats..."
+    RESPONSES:
+    -   REPLY: "Naw, it's OK, your gratitude's enough for me."
+        ACTIONS:
+        -   start_quest:
+            - fedex
+        -   take_stuff:
+            - Box
+        GOTO: quest_fedex
+        
+    -   REPLY: "A beaver pelt it is, then!"
+        ACTIONS:
+        -   start_quest:
+            - fedex
+        -   take_stuff:
+            - Box
+        GOTO: quest_fedex
+        
+    -   REPLY: "I already gotta hat.  Deliver your own package."
+        GOTO: end
+        
+-   ID: quest_fedex
+    SAY: "You should be able to find Pekko in the main compound area.  If\
+       \ anyone asks you why you are looking for him, 'say that he promised you\
+       \ something'.  Pekko's always making promises.  Oh, and don't open the\
+       \ box. [ Janie hands you the package ]"
+    RESPONSES:
+    -   REPLY: "Why can't I open the box?"
+        GOTO: why_no_open
+        
+    -   REPLY: "You got it, boss."
+        GOTO: old_pals
+        
+-   ID: why_no_open
+    SAY: "You are the nosiest little mailman anywhere, ain'tcha?  How about\
+       \ 'it's private.'?  If I wanted you to know what it was, I wouldn't have\
+       \ wasted a perfectly good box it, now would I?"
+    RESPONSES:
+    -   REPLY: "I guess not."
+        GOTO: old_pals
+        
+-   ID: old_pals
+    SAY: "So what can I do for you?"
+    RESPONSES:
+    -   REPLY: "I'm trying to make beer, can you help me find some stuff?"
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].getValue('beer_quality') < 1"
+        GOTO: help_beer
+        
+    -   REPLY: "I guess I'll see if I can't find this Pekko character for you."
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: end
+        
+    -   REPLY: "So long, Janie.  Catch you later."
+        CONDITION: "not quest.hasActiveQuest('fedex') or\
+           \ quest.hasFinishedQuest('fedex')"
+        GOTO: end
+        
+    -   REPLY: "Uh, I opened the box."
+        CONDITION: "quest['fedex'].getValue('open_box')"
+        GOTO: open_box
+        
+    -   REPLY: "Hey, some folks seem to think Pekko left the compound.  Would\
+           \ you have seen him?"
+        CONDITION: "quest['fedex'].getValue('check_pekko_left') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: true
+                variable: check_pekko_left
+        GOTO: pekko_left
+        
+    -   REPLY: "I have some bad news.  I found your friend, Pekko.  In the\
+           \ water tank.  Dead."
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko') and not\
+           \ quest['fedex'].getValue('accused_of_murder')"
+        GOTO: dead_pekko
+        
+    -   REPLY: "What are we going to do about Pekko's murder?"
+        CONDITION: "quest.hasActiveQuest('fedex') and\
+           \ quest['fedex'].getValue('accused_of_murder')"
+        ACTIONS:
+        -   set_quest_variable: &id001
+                quest: fedex
+                value: true
+                variable: report_murder_to_janie
+        GOTO: discuss_murder
+        
+-   ID: help_beer
+    SAY: "Well, what do you need?"
+    RESPONSES:
+    -   REPLY: "Where do you folks get water from.  The more pure, the better."
+        GOTO: help_water
+        
+    -   REPLY: "Some kind of grain, or fruit or something."
+        GOTO: help_grain
+        
+    -   REPLY: "I'm really looking for some brewer's yeast."
+        GOTO: help_yeast
+        
+    -   REPLY: "I need a pot to cook the mash in."
+        GOTO: help_pot
+        
+    -   REPLY: "It would be great if I had some bottles to put the brew in!"
+        GOTO: help_bottles
+        
+    -   REPLY: "I think I can handle it from here."
+        GOTO: back
+        
+-   ID: help_water
+    SAY: "Oh, that is the one thing we have plenty of.  We have an old tanker\
+       \ trunk that we shovel the snow in and melt it.  You can see it from up\
+       \ here, but you have to go downstairs to tap it.  But the water's been\
+       \ tasting a little funny lately."
+    RESPONSES:
+    -   REPLY: "Great, that's a huge help."
+        GOTO: back
+        
+-   ID: help_grain
+    SAY: "You could try the farm, and there should be some food in the\
+       \ storerooms"
+    RESPONSES:
+    -   REPLY: "Thanks, I'll try that."
+        GOTO: back
+        
+-   ID: help_yeast
+    SAY: "You got me.  I wonder if there is even any left at all."
+    RESPONSES:
+    -   REPLY: "Someone must have some!"
+        GOTO: back
+        
+-   ID: help_pot
+    SAY: "Did you try the kitchen?  Or the storerooms?"
+    RESPONSES:
+    -   REPLY: "Uh, yeah.  I guess that was obvious."
+        GOTO: back
+        
+-   ID: help_bottles
+    SAY: "All the random junk is downstairs in old parking lot.  We have our\
+       \ own little junkyard."
+    RESPONSES:
+    -   REPLY: "Oooh... there is probably lots of good stuff down there."
+        GOTO: back
+        
+-   ID: open_box
+    SAY: "What!  You little worm!  Why did you do that!"
+    RESPONSES:
+    -   REPLY: "Well, I figured since Pekko was dead and all..."
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: dead_pekko
+        
+    -   REPLY: "I'm sorry, I was just curious."
+        GOTO: give_back_boots
+        
+-   ID: boot_gift
+    SAY: "That's what was in the package. [Janie takes boots out of the\
+       \ package, and gives them to you]"
+    RESPONSES:
+    -   REPLY: "Oh.  I must be missing something..."
+        GOTO: explain_boots
+        
+-   ID: pekko_left
+    SAY: "Left?  No, he's here.  I didn't see him leave, and there's no entry\
+       \ in the log.  He's definitly here.  I'd know."
+    RESPONSES:
+    -   REPLY: "Boy, that's strange."
+        GOTO: back
+        
+-   ID: discuss_murder
+    SAY: "Look.  Just stay out of it.  It's not really your business anyway,\
+       \ Stranger.  Just forget we ever talked."
+    RESPONSES:
+    -   REPLY: "Alright, Alright.  But I don't like it."
+        GOTO: give_up_quest
+        
+    -   REPLY: "It was Bart."
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: bart
+                variable: accused_of_murder
+        GOTO: accuse_bart
+        
+    -   REPLY: "It was Matti, the Snow Shoveler!"
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: matti
+                variable: accused_of_murder
+        GOTO: accuse_matti
+        
+    -   REPLY: "I think it was an accident."
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: ''
+                variable: accused_of_murder
+        GOTO: report_accident
+        
+    -   REPLY: "Well, I'm going to talk to the boss about it."
+        GOTO: report_to_boss
+        
+-   ID: give_up_quest
+    SAY: "You are making the right decision."
+    RESPONSES:
+    -   REPLY: "If you want me to drop it, I'll drop it."
+        ACTIONS:
+        -   fail_quest:
+            - fedex
+        GOTO: drop_quest
+        
+    -   REPLY: "No, I can't drop it.  I have to talk to the authorities"
+        GOTO: report_to_boss
+        
+-   ID: drop_quest
+    SAY: "Drop it.  It's bigger than than both of us."
+    RESPONSES:
+    -   REPLY: "Consider it dropped.  How about a date?"
+        GOTO: end
+        
+-   ID: accuse_bart
+    SAY: "The town drunk???  ...really?  Anyway... I don't want to know.  He's\
+       \ dead.  I knew his big mouth and goofy ideas were going to get him in\
+       \ trouble.  Just drop it, please."
+    RESPONSES:
+    -   REPLY: "You can't just allow folks to murder people! It's wrong!\
+           \ Someone must be informed!"
+        GOTO: report_to_boss
+        
+    -   REPLY: "If you want me to, I'll forget about the whole thing..."
+        GOTO: give_up_quest
+        
+-   ID: accuse_matti
+    SAY: "Matti?  He looks mean, but I don't think he would hurt a fly.\
+       \ Anyway...  I don't want to know.  He's dead. He saved me you, know.  I\
+       \ guess he needed to pay more attention to himself.  Just drop it,\
+       \ please."
+    RESPONSES:
+    -   REPLY: "You can't just allow folks to murder people! It's wrong!\
+           \ Someone must be informed!"
+        GOTO: report_to_boss
+        
+    -   REPLY: "If you want me to, I'll forget about the whole thing..."
+        GOTO: give_up_quest
+        
+-   ID: report_accident
+    SAY: "An accident?  That's... convenient.  For someone."
+    RESPONSES:
+    -   REPLY: "Well, uh, you know.  It's a dangerous world.  I guess he\
+           \ slipped and fell in the cistern."
+        GOTO: old_pals
+        
+-   ID: report_to_boss
+    SAY: "You can talk to Kimmo, but I don't think you'll find the justice you\
+       \ are looking for."
+    RESPONSES:
+    -   REPLY: "Maybe.  But I have to try, right?  Otherwise, we are no better\
+           \ than wild animals."
+        GOTO: end
+        
+-   ID: explain_boots
+    SAY: "The boots were a signal that he should leave town... that he'd gone\
+       \ too far this time."
+    RESPONSES:
+    -   REPLY: "You knew about this?  Who do you think killed him?"
+        ACTIONS:
+        -   set_quest_variable: *id001
+        GOTO: discuss_murder
+        
+    -   REPLY: "I think I know who killed him."
+        ACTIONS:
+        -   set_quest_variable: *id001
+        GOTO: discuss_murder
+        
+-   ID: dead_pekko
+    SAY: "He's dead?  Well, I'm too late then. I guess you can keep the boots,\
+       \ then."
+    RESPONSES:
+    -   REPLY: "What boots?"
+        CONDITION: "not quest['fedex'].getValue('open_box')"
+        ACTIONS:
+        -   take_stuff:
+            - boots
+        GOTO: boot_gift
+        
+    -   REPLY: "Yeah, I figured he wouldn't need them.  Why did you send him\
+           \ boots, anyway?"
+        CONDITION: "quest['fedex'].getValue('open_box')"
+        GOTO: explain_boots
+        
+    -   REPLY: "Does this mean no beaver pelt?"
+        GOTO: no_beaver_pelt
+        
+-   ID: no_beaver_pelt
+    SAY: "No pelt."
+    RESPONSES:
+    -   REPLY: "Awwwwww..."
+        GOTO: back
+        
+-   ID: give_back_boots
+    SAY: "Give me that back!"
+    RESPONSES:
+    -   REPLY: "Here"
+        CONDITION: "pc.hasItem(\"Boots\")"
+        ACTIONS:
+        -   restart_quest:
+            - fedex
+        GOTO: rewrap_box
+        
+    -   REPLY: "I seem to have... misplaced them..."
+        CONDITION: "not pc.hasItem(\"Boots\")"
+        GOTO: lost_boots
+        
+-   ID: lost_boots
+    SAY: "WHAT!?"
+    RESPONSES:
+    -   REPLY: "I, uh, go search them"
+        GOTO: end
+        
+-   ID: rewrap_box
+    SAY: "[Janie takes boots from PC and rewraps them].  Now, here.  And don't\
+       \ open it again."
+    RESPONSES:
+    -   REPLY: "OK, It will never happen again."
+        GOTO: old_pals
+        
+-   ID: gratitude
+    SAY: "Well aren't you just a thick slice of awesome."
+    RESPONSES:
+    -   REPLY: "I try, I try."
+        GOTO: old_pals
+        
+-   ID: rude_comeon
+    SAY: "[fondles weapon] I hope you can take it as well as you give it..."
+    RESPONSES:
+    -   REPLY: "Any way you want it, that's the way you need it!"
+        GOTO: end
+        
+...

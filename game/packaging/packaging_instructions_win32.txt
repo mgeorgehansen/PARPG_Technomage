@@ -1,0 +1,23 @@
+To create the installer you need:
+
+1. NSIS: http://nsis.sourceforge.net/Download
+2. Current Fife SVN - Check if PARPG runs with it first before proceeding.
+
+What you need to do:
+
+windows_packaging.nsi: (For creating a setup with the script files)
+1. Build FIFE
+2. Open a command line and change to the FIFE diretory
+3. Run setup bdist_wininst to create an installer for the fife python module.
+4. Copy the installer from "<FIFE_DIR>\dist" to "<PARPG_DIR>\packaging\dependencies"
+5. Copy oalinst.exe from "<FIFE_DIR>\build\win32\binaries\mingw" to "<PARPG_DIR>\packaging\dependencies"
+6. Compile windows_packaging.nsi with NSIS - You can right click on it and select "Compile NSIS script"
+7. Finished.
+
+windows_packaging_exe.nsi: (For creating a setup with a standalone binary)
+1. Being able to run the game
+2. Delete <PARPG_GAME_DIR>\dist - or move it somewhere else. This is to make sure nothing unnecessary is added.
+3. Read create_exe.bat.txt
+4. Run create_exe.bat
+5. Compile windows_packaging_exe.nsi with NSIS - You can right click on it and select "Compile NSIS script"
+6. Finished.

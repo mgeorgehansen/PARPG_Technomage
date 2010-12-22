@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><!ELEMENT Module (Setting+)>
+<!ATTLIST Module
+	name CDATA #REQUIRED>
+<!ELEMENT Setting ANY>
+<!ATTLIST Setting
+	name CDATA #REQUIRED
+	type (str, unicode, int, float, bool, list, dict) #IMPLIED
+	strip CDATA #IMPLIED>

@@ -1,0 +1,7 @@
+This file runs a python script that creates a standalone windows binary file, including needed libraries, from the game script and puts them in the dist folder.
+
+For this script you need the following (in addition to the games requirements):
+py2exe (http://www.py2exe.org/)
+python library dependencies that are installed as eggs need to be unzipped. This can be done with using -Z (short for --always-unzip) when installing with easy_python (example easy_install -Z pyyaml) or unzipping these manually (eggs are just renamed zips). PyYaml is such a dependency. py2exe with complain if dependencies are missing so check the log.
+
+Note that the to run the game the folders containing the data need to be in the same folder as the binary.

@@ -1,0 +1,188 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Farmer Manslow
+AVATAR_PATH: gui/portraits/farmer.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Who the hell are you??"
+    ACTIONS:
+    -   meet:
+        - manslow
+    RESPONSES:
+    -   REPLY: "I'm looking for stuff to make beer with "
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions') and not\
+           \ quest.hasFinishedQuest('beer') and not\
+           \ quest['beer'].isGoalValue('farmer_beer_convinced')"
+        GOTO: convince_farmer
+        
+    -   REPLY: "You can help me with the beer, thing, right?"
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].isGoalValue('farmer_beer_convinced')"
+        ACTIONS:
+        -   set_quest_variable: &id001
+                quest: beer
+                value: 1
+                variable: farmer_beer_convinced
+        GOTO: help_beer
+        
+    -   REPLY: "Hey, that wheat you gave me really made the brew work."
+        CONDITION: "quest['beer'].getValue('beer_quality') > 3"
+        GOTO: gratitude
+        
+    -   REPLY: "Have you tried my beer?"
+        CONDITION: "quest['beer'].getValue('beer_quality') !=0 and\
+           \ quest['beer'].getValue('beer_quality') <= 3"
+        GOTO: grumpitude
+        
+    -   REPLY: "I'm looking for Pekko, you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest.hasFinishedQuest('fedex')"
+        GOTO: help_fedex
+        
+    -   REPLY: "This is quite a nice farm you have here, can you tell me about\
+           \ it?"
+        GOTO: chat_farm
+        
+    -   REPLY: "Hey, relax there old timer!"
+        GOTO: leave
+        
+-   ID: convince_farmer
+    SAY: "Never touch the stuff."
+    RESPONSES:
+    -   REPLY: "Come on -- have a heart.  Man cannot live on bread alone!"
+        GOTO: leave
+        
+    -   REPLY: "Well to be honest... we are trying to undermine Jacob's\
+           \ stranglehold on the booze in this town."
+        GOTO: inn_explain
+        
+-   ID: inn_explain
+    SAY: "Really.  What makes you think I'll help you."
+    RESPONSES:
+    -   REPLY: "Well, you know, Bart, he's a good guy..."
+        GOTO: leave
+        
+    -   REPLY: "Because Jacob is the only guy here grumpier than you!"
+        ACTIONS:
+        -   set_quest_variable: *id001
+        GOTO: help_beer
+        
+-   ID: help_beer
+    SAY: "He is a right old bastard, that Jacob... What are you looking for?"
+    RESPONSES:
+    -   REPLY: "First, I need some water."
+        GOTO: help_water
+        
+    -   REPLY: "What I really need is some kind of grain, or fruit or\
+           \ something."
+        CONDITION: "not quest['beer'].isGoalValue('grain_available')"
+        ACTIONS:
+        -   take_stuff:
+            - Grain
+        -   set_quest_variable:
+                quest: beer
+                value: 0
+                variable: grain_available
+        GOTO: help_grain
+        
+    -   REPLY: "You wouldn't happen to know where I can find some yeast?"
+        GOTO: help_yeast
+        
+    -   REPLY: "Well, I need a big pot to cook the mash in."
+        GOTO: help_pot
+        
+    -   REPLY: "The final step is some thing to hold the final product in."
+        GOTO: help_bottles
+        
+    -   REPLY: "You are the grumpiest old man ever."
+        GOTO: leave
+        
+-   ID: help_water
+    SAY: "What are you an idiot?  We're surrounded by SNOW."
+    RESPONSES:
+    -   REPLY: "Sorry, no need to be a jerk about it..."
+        GOTO: leave
+        
+-   ID: help_grain
+    SAY: "Well, that is my department.  I'll give you a bushel if you promise\
+       \ to use your brew to cause Jacob trouble."
+    RESPONSES:
+    -   REPLY: "Deal."
+        GOTO: back
+        
+-   ID: help_yeast
+    SAY: "Yeast.  You really think someone is keeping around some kind of\
+       \ starter culture?"
+    RESPONSES:
+    -   REPLY: "Uh... yeah?  Hey, how do you know so much about brewing if you\
+           \ don't even drink!"
+        GOTO: leave
+        
+-   ID: help_pot
+    SAY: "Is there anything that you HAVE to make beer with?"
+    RESPONSES:
+    -   REPLY: "Well, I have these instructions..."
+        GOTO: back
+        
+-   ID: help_bottles
+    SAY: "Junkyard."
+    RESPONSES:
+    -   REPLY: "Where's the junkyard?"
+        GOTO: explain_junkyard
+        
+-   ID: explain_junkyard
+    SAY: "Downstairs.  Near the woodpile and the garbage dump."
+    RESPONSES:
+    -   REPLY: "Wow, that was kind of helpful... maybe you aren't so bad after\
+           \ all! "
+        GOTO: leave
+        
+-   ID: help_fedex
+    SAY: "Pekko... I thought he was out scouting?  Did you try the Inn?"
+    RESPONSES:
+    -   REPLY: "OK, the Inn, thanks."
+        GOTO: back
+        
+-   ID: gratitude
+    SAY: "I still think it's a waste of grain.  But anything that screws that\
+       \ bastard Jacob is OK by me."
+    RESPONSES:
+    -   REPLY: "Couldn't have done it without you."
+        GOTO: leave
+        
+-   ID: grumpitude
+    SAY: "At least you didn't waste any of my grain on it.  Awful stuff."
+    RESPONSES:
+    -   REPLY: "No thanks, to you old man."
+        GOTO: leave
+        
+-   ID: chat_farm
+    SAY: "I don't have time for chit chat.  Talk to my assistants."
+    RESPONSES:
+    -   REPLY: "OK, I'll do that."
+        GOTO: back
+        
+-   ID: leave
+    SAY: "Get off mah land!"
+    RESPONSES:
+    -   REPLY: "Bye!"
+        GOTO: end
+        
+...

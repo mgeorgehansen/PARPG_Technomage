@@ -1,0 +1,100 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: NPC
+AVATAR_PATH: gui/portraits/npc.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Things are tough around here, let me tell you our problems"
+    RESPONSES:
+    -   REPLY: "Here's your beer"
+        CONDITION: "quest['beer'].isGoalValue(\"beer_gathered\") and not\
+           \ quest.hasFinishedQuest('beer')"
+        ACTIONS:
+        -   complete_quest:
+            - beer
+        GOTO: finish_quest
+        
+    -   REPLY: "No problem (finished quest)"
+        CONDITION: "quest.hasFinishedQuest('beer')"
+        GOTO: main_dialog
+        
+    -   REPLY: "Give me a beer! (Cheater!)"
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and not\
+           \ quest['beer'].isGoalValue(\"beer_gathered\")"
+        ACTIONS:
+        -   increase_quest_variable:
+                quest: beer
+                value: 1
+                variable: beer_gathered
+        GOTO: give_beer
+        
+    -   REPLY: "I'm on it"
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer')"
+        GOTO: main_dialog
+        
+    -   REPLY: "Sure, tell me all about it"
+        CONDITION: "not quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer')"
+        GOTO: listen_more
+        
+    -   REPLY: "That sounds boring. Bye."
+        GOTO: end
+        
+-   ID: listen_more
+    SAY: "Raiders stole our cattle, our well was poisoned, and the beer is all\
+       \ gone!"
+    RESPONSES:
+    -   REPLY: "I help you"
+        ACTIONS:
+        -   start_quest:
+            - beer
+        GOTO: quest_accept
+        
+    -   REPLY: "Good luck with that"
+        GOTO: end
+        
+    -   REPLY: "Fear not, gentle villager. I will return shortly with the\
+           \ antidote."
+        GOTO: listen_more
+        
+-   ID: quest_accept
+    SAY: "All your beer are belong to us!"
+    RESPONSES:
+    -   REPLY: "Right..."
+        GOTO: main_dialog
+        
+-   ID: give_beer
+    SAY: "Here's your beer..."
+    RESPONSES:
+    -   REPLY: "Thanks."
+        GOTO: main_dialog
+        
+-   ID: finish_quest
+    SAY: "This is the good stuff! *hik*"
+    RESPONSES:
+    -   REPLY: "Sigh"
+        GOTO: main_dialog
+        
+-   ID: stop_quest
+    SAY: "Jerk."
+    RESPONSES:
+    -   REPLY: "That's how they call me!"
+        GOTO: main_dialog
+        
+...

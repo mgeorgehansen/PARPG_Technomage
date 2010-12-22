@@ -1,0 +1,8 @@
+<!--
+ * Buttons have a dimension of 95x20 pixels
+ * 3 pixels vertical spacing is foreseen between buttons
+ * 7 pixels spacing is foreseen above and below the buttons
+ * Total height should be num_button*20 + (num_button-1)*3 + 2*7
+-->
+<Container name="MainMenuBackground">
+</Container>

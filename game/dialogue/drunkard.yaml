@@ -1,0 +1,553 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Bart The Drunkard
+AVATAR_PATH: gui/portraits/drunkard.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "Hey there, back up... no need to gang up on a poor guy!"
+    RESPONSES:
+    -   REPLY: "Gang up?  There's only one of me!"
+        CONDITION: "not pc.met('bart')"
+        GOTO: first_impression
+        
+    -   REPLY: "Glad to see you're feeling better."
+        CONDITION: "pc.met('bart') and quest.hasFinishedQuest('beer')"
+        GOTO: gratitude
+        
+    -   REPLY: "Same old Bart,  I see."
+        CONDITION: "pc.met('bart') and not\
+           \ quest['fedex'].isGoalValue('accused_of_murder')"
+        GOTO: old_pals
+        
+    -   REPLY: "See you later, Killer."
+        CONDITION: "pc.met('bart') and\
+           \ quest['fedex'].isGoalValue('accused_of_murder')"
+        GOTO: end
+        
+    -   REPLY: "Ha, you better sleep it off, buddy."
+        GOTO: end
+        
+-   ID: first_impression
+    SAY: "Oh... yeah... sorry.  My vision goes a little funny sometimes.\
+       \ Name's Bart."
+    ACTIONS:
+    -   meet:
+        - bart
+    RESPONSES:
+    -   REPLY: "Are you drunk?"
+        CONDITION: "not quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer')"
+        GOTO: elaborate_beer
+        
+    -   REPLY: "Wow, you're really hammered.  I'll come back when you're\
+           \ sober."
+        GOTO: end
+        
+-   ID: elaborate_beer
+    SAY: "Well, not for much longer, unfortunately.  My stash is just about run\
+       \ dry.  That bastard, Jacob has a still, but who can afford his prices!\
+       \ He basically has a monopoly.  No one else around here knows how to brew\
+       \ us up some more booze!"
+    RESPONSES:
+    -   REPLY: "Wow, what a jerk.  Well, I'll be glad to lend a hand to such a\
+           \ noble task. Assuming you guys will supply the raw materials."
+        ACTIONS:
+        -   start_quest:
+            - beer
+        GOTO: quest_beer
+        
+    -   REPLY: "Hey, the man is entitled to run his business.  I'm not going to\
+           \ mess up his meal ticket."
+        GOTO: old_pals
+        
+    -   REPLY: "Alcohol is work of the Devil!!"
+        GOTO: end
+        
+-   ID: quest_beer
+    SAY: "You sir, are a gentleman and a scholar.  I am sure folks around here\
+       \ will help you find what you need."
+    RESPONSES:
+    -   REPLY: "You aren't even going to offer me a reward?"
+        GOTO: reward_query
+        
+    -   REPLY: "Well, I'll get right on it.  Finally, a worthwhile test of my\
+           \ scrounging skills."
+        GOTO: old_pals
+        
+-   ID: old_pals
+    SAY: "So what can I do for you?"
+    RESPONSES:
+    -   REPLY: "Hey, Bart - here is my shopping list I need to brew us up\
+           \ something tasty.  Can you help?"
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions') and not\
+           \ quest.hasFinishedQuest('beer')"
+        GOTO: help_beer
+        
+    -   REPLY: "By the way, Bart, I am looking for a chap named 'Pekko', you\
+           \ know were I can find him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: help_fedex
+        
+    -   REPLY: "Hm.  You got a good buzz on, today?"
+        CONDITION: "not quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer')"
+        GOTO: elaborate_beer
+        
+    -   REPLY: "Hey, try my fantastic brew!"
+        CONDITION: "quest['beer'].getValue('beer_quality') != 0"
+        GOTO: beer_tasting
+        
+    -   REPLY: "Well, I am off to make some beer, wish me luck!"
+        CONDITION: "quest.hasActiveQuest('beer') and not\
+           \ quest.hasFinishedQuest('beer') and\
+           \ quest['beer'].getValue('beer_quality') == 0"
+        GOTO: end
+        
+    -   REPLY: "Adios, Bart"
+        CONDITION: "not quest.hasActiveQuest('beer') or\
+           \ quest.hasFinishedQuest('beer')"
+        GOTO: end
+        
+    -   REPLY: "Did you hear about Pekko?"
+        CONDITION: "quest.hasActiveQuest('fedex') and\
+           \ quest['fedex'].isGoalValue('found_pekko') and not\
+           \ quest['fedex'].isGoalValue('accused_of_murder')"
+        GOTO: dead_pekko
+        
+    -   REPLY: "Pekko was murdered.  And someone's responsible."
+        CONDITION: "quest.hasActiveQuest('fedex') and\
+           \ quest['fedex'].isGoalValue('found_pekko') and not\
+           \ quest['fedex'].isGoalValue('accused_of_murder')"
+        GOTO: murder_accuse
+        
+-   ID: help_beer
+    SAY: "Well, what do you need?"
+    RESPONSES:
+    -   REPLY: "Where do you folks get water from.  The more pure, the better."
+        CONDITION: "not quest['fedex'].isGoalValue('drunkard_water_asked')"
+        GOTO: help_water
+        
+    -   REPLY: "Some kind of grain, or fruit or something."
+        GOTO: help_grain
+        
+    -   REPLY: "I'm really looking for some brewer's yeast."
+        GOTO: help_yeast
+        
+    -   REPLY: "I need a pot to cook the mash in."
+        GOTO: help_pot
+        
+    -   REPLY: "It would be great if I had some bottles to put the brew in!"
+        GOTO: help_bottles
+        
+    -   REPLY: "I think I can handle it from here."
+        GOTO: back
+        
+-   ID: help_water
+    SAY: "Water!  I dunno.  I never trust the stuff.  Guess you could melt snow\
+       \ or something."
+    RESPONSES:
+    -   REPLY: "Yeah, I suppose I could at that.  What does everyone drink when\
+           \ the snow melts?"
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: 1
+                variable: drunkard_water_asked
+        GOTO: snow_melting
+        
+-   ID: help_grain
+    SAY: "You mean like wheat, hops, barley?  I dunno about that, but if you\
+       \ poke around you should be able to find something with enough starch to\
+       \ ferment."
+    RESPONSES:
+    -   REPLY: "Yeah, but where?"
+        GOTO: back
+        
+-   ID: help_yeast
+    SAY: "Good luck finding that!"
+    RESPONSES:
+    -   REPLY: "This is going to be harder than I thought"
+        GOTO: back
+        
+-   ID: help_pot
+    SAY: "I'm pretty sure the quartermaster has one, back in the store room.\
+       \ She can be hard to get stuff out of, though.  It's kind of her job to\
+       \ be stingy"
+    RESPONSES:
+    -   REPLY: "Fantastic, I'll give the quartermaster a try."
+        GOTO: back
+        
+-   ID: help_bottles
+    SAY: "I don't know, myself.  One of the scavenging teams must have brought\
+       \ in something."
+    RESPONSES:
+    -   REPLY: "Scavenging teams?"
+        GOTO: explain_scavenging
+        
+    -   REPLY: "OK, I'll poke around some more."
+        GOTO: back
+        
+-   ID: explain_scavenging
+    SAY: "Yeah, when the weather is good, we send out teams to dig around in\
+       \ the ruins and forests.  This place takes quite a bit of upkeep you\
+       \ know."
+    RESPONSES:
+    -   REPLY: "Ah, makes sense."
+        GOTO: help_beer
+        
+-   ID: snow_melting
+    SAY: "Like I said, I never drink the stuff."
+    RESPONSES:
+    -   REPLY: "Well, alrighty then."
+        GOTO: help_beer
+        
+-   ID: reward_query
+    SAY: "I would think that getting your own booze ration would be reward\
+       \ enough!"
+    RESPONSES:
+    -   REPLY: "I am fond of a bender now and again, it's true."
+        GOTO: old_pals
+        
+    -   REPLY: "Personally, I stay away from alcohol.  Dulls the senses.  But I\
+           \ suppose I'll help you out of the goodness of my heart."
+        GOTO: old_pals
+        
+-   ID: dead_pekko
+    SAY: "Dead, huh.  That's a shame."
+    RESPONSES:
+    -   REPLY: "You seem really broken up about it."
+        GOTO: dead_discuss
+        
+    -   REPLY: "You don't seem very surprised to hear."
+        GOTO: dead_discuss_ii
+        
+-   ID: dead_discuss
+    SAY: "The kid was a problem.  It's no surprise to me that someone had it in\
+       \ for him."
+    RESPONSES:
+    -   REPLY: "So you are saying that a lot of people wanted him dead?"
+        GOTO: dead_discuss_ii
+        
+    -   REPLY: "Had it in for him... I didn't say he was murdered!"
+        GOTO: murder_accuse
+        
+-   ID: dead_discuss_ii
+    SAY: "Well, I'm sure it was just an accident.  It's a dangerous world\
+       \ today."
+    RESPONSES:
+    -   REPLY: "Accident, huh.  Interesting theory"
+        GOTO: old_pals
+        
+    -   REPLY: "Oh, I don't think it was an accident at all.  I think he was\
+           \ murdered."
+        GOTO: murder_accuse
+        
+-   ID: help_fedex
+    SAY: "No idea."
+    RESPONSES:
+    -   REPLY: "Thanks..."
+        GOTO: old_pals
+        
+-   ID: murder_accuse
+    SAY: "Wait... so .. you are the junior detective now?  How do you know he\
+       \ was murdered?"
+    RESPONSES:
+    -   REPLY: "His head was caved in, and his arm was broken from being forced\
+           \ into the snow hopper at the top of the cistern."
+        GOTO: discuss_murder
+        
+    -   REPLY: "I know he was murdered, and I know you did it.  But I don't\
+           \ know why."
+        ACTIONS:
+        -   set_quest_variable: &id001
+                quest: fedex
+                value: bart
+                variable: accused_of_murder
+        GOTO: accuse_bart
+        
+    -   REPLY: "I think we both know how he was killed, Bart.  The question\
+           \ remains, who do I tell."
+        CONDITION: "not quest['fedex'].getValue('report_murder_to_janie') and\
+           \ not quest['fedex'].getValue('report_murder_to_kimmo')"
+        GOTO: blackmail_bart
+        
+-   ID: discuss_murder
+    SAY: "Maybe he just fuckin' fell."
+    RESPONSES:
+    -   REPLY: "Maybe.  But I'll get to the bottom of this."
+        GOTO: end
+        
+    -   REPLY: "I don't think so, I think it was you.  The question is, why?"
+        ACTIONS:
+        -   set_quest_variable: *id001
+        GOTO: accuse_bart
+        
+-   ID: accuse_bart
+    SAY: "Look, stranger...  I don't know who you think you are but this isn't\
+       \ your place.  The fact is, Pekko didn't have many friends, and even his\
+       \ friends didn't even really like him."
+    RESPONSES:
+    -   REPLY: "What about Janie?"
+        CONDITION: "quest.hasFinishedQuest('fedex')"
+        GOTO: janie_pekko_connection
+        
+    -   REPLY: "Whatever, murderer.  I'll see you hang."
+        GOTO: end
+        
+-   ID: blackmail_bart
+    SAY: "Oh, so that's how it's going to be.  And what is the cost of your\
+       \ silence?"
+    RESPONSES:
+    -   REPLY: "That's right, scumbag.  I'm going to squeeze you until you're\
+           \ dry."
+        GOTO: greedy_blackmail
+        
+    -   REPLY: "That's a pretty nice coat you go there, I'll take that..."
+        CONDITION: "not quest['fedex'].isGoalValue('got_drunkards_coat')"
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: 1
+                variable: got_drunkards_coat
+        -   take_stuff:
+            - coat
+        GOTO: light_blackmail
+        
+    -   REPLY: "Hey, I'm not a greedy bastard.  How about you just owe me?"
+        GOTO: delayed_blackmail
+        
+    -   REPLY: "Ha, just joshing with ya.  Near as I can tell the guy deserved\
+           \ it."
+        GOTO: feint_blackmail
+        
+-   ID: greedy_blackmail
+    SAY: "You haven't got the guts.  My friends are powerful, and you ain't got\
+       \ nuthin' on me.  I'm calling your bluff."
+    RESPONSES:
+    -   REPLY: "Guess we'll find out HOW powerful, now, won't we!"
+        GOTO: end
+        
+-   ID: light_blackmail
+    SAY: "My coat, huh.  That's it?  I guess life is pretty cheap these days.\
+       \ Here ya go."
+    RESPONSES:
+    -   REPLY: "Hey, pretty nice.  Fits too!  Catch ya later, Bart."
+        GOTO: end
+        
+-   ID: delayed_blackmail
+    SAY: "OK, so I owe you one.  You never know when you might need a favor."
+    RESPONSES:
+    -   REPLY: "That's what I was thinking."
+        GOTO: old_pals
+        
+-   ID: feint_blackmail
+    SAY: "Deserve got nothin' to do with it.  You're OK by me, though."
+    RESPONSES:
+    -   REPLY: "Likewise, Bart.  This could be the result of a bee-you-ti-ful\
+           \ friendship"
+        GOTO: old_pals
+        
+-   ID: janie_pekko_connection
+    SAY: "Janie... what does she have anything to this?  What have you told\
+       \ her?"
+    RESPONSES:
+    -   REPLY: "I don't see what difference it makes."
+        GOTO: janie_pekko_continued
+        
+-   ID: janie_pekko_continued
+    SAY: "It.. it.. has everything.  Look.  You can't tell her, OK.  You just\
+       \ can't."
+    RESPONSES:
+    -   REPLY: "It's too late.  She already knows you killed him."
+        CONDITION: "quest['fedex'].getValue('report_murder_to_janie') and\
+           \ quest['fedex'].getValue('accused_of_murder') = 'bart'"
+        GOTO: janie_knows
+        
+    -   REPLY: "Oh, I can't?  Why shouldn't I?"
+        GOTO: force_bart
+        
+-   ID: janie_knows
+    SAY: "Aw, hell.  You gotta... I dunno.  Take it back... I ... I .. Aw,\
+       \ hell."
+    RESPONSES:
+    -   REPLY: "Will you tell me the whole story if I convince her it was\
+           \ someone else?  Or an accident?"
+        GOTO: recant_testimony
+        
+    -   REPLY: "How did you think you could keep it from her?  Idiot.  You\
+           \ deserve what's coming to you."
+        GOTO: end
+        
+-   ID: recant_testimony
+    SAY: "Anything man, I'll do anything."
+    RESPONSES:
+    -   REPLY: "I don't know if it will work, but I'll try"
+        GOTO: end
+        
+-   ID: force_bart
+    SAY: "Because... because... [sobs].  I love her.  Look.  Promise me you\
+       \ won't tell her and I'll spill."
+    RESPONSES:
+    -   REPLY: "I can't promise that."
+        GOTO: no_promise
+        
+    -   REPLY: "Alright.. What she doesn't know can't hurt her."
+        ACTIONS:
+        -   set_quest_variable: &id002
+                quest: fedex
+                value: true
+                variable: drunkard_confesses
+        GOTO: bart_confess
+        
+-   ID: no_promise
+    SAY: "Fuck you."
+    RESPONSES:
+    -   REPLY: "Fuck _you_."
+        GOTO: end
+        
+    -   REPLY: "Hmmmm.  Your arguments have swayed me.  I won't tell her if you\
+           \ tell what really happened."
+        ACTIONS:
+        -   set_quest_variable: *id002
+        GOTO: bart_confess
+        
+-   ID: bart_confess
+    SAY: "So. It went down like this.  It was Kimmo.  He had enough of his\
+       \ brother stirring up trouble; causing a panic about the weather.  IF we\
+       \ leave here, his Ma will die, and Kimmo will lose his power over us.  He\
+       \ knows this.  Pekko just wouldn't shut up about that ice age nonsense.\
+       \ People were getting scared."
+    RESPONSES:
+    -   REPLY: "So what does that have to do with you."
+        GOTO: barts_price
+        
+-   ID: barts_price
+    SAY: "Tha fuckin' booze, man.  I had to have it.  That bastard Jacob priced\
+       \ me out, I was starting to get the shakes.  Kimmo had a whole case of\
+       \ the real stuff - pre war stuff.  That was the deal.  Disappear his\
+       \ brother, get the hooch."
+    RESPONSES:
+    -   REPLY: "What were you going to do when the booze ran out?"
+        GOTO: consequences
+        
+-   ID: consequences
+    SAY: "Whatever it takes.  Whatever it takes.  Maybe if you had shown up a\
+       \ few days earlier, things would have been different."
+    RESPONSES:
+    -   REPLY: "This is a cold blooded town.  I am not sure what to do now."
+        GOTO: end
+        
+-   ID: beer_tasting
+    SAY: "You are a genius, sir, a genius. [Bart holds bottle up to the light]\
+       \ Looks great. How did it come out?"
+    RESPONSES:
+    -   REPLY: "I think it's just about perfect"
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 5"
+        ACTIONS:
+        -   complete_quest:
+            - beer
+        GOTO: best_beer
+        
+    -   REPLY: "It took some doing, but I think I got it down."
+        CONDITION: "quest['beer'].getValue('beer_quality') == 4"
+        ACTIONS:
+        -   complete_quest:
+            - beer
+        GOTO: good_beer
+        
+    -   REPLY: "I am pretty happy about it, given the circumstances."
+        CONDITION: "quest['beer'].getValue('beer_quality') == 3"
+        ACTIONS:
+        -   complete_quest:
+            - beer
+        GOTO: decent_beer
+        
+    -   REPLY: "It's not my best work, but it will get you hammered."
+        CONDITION: "quest['beer'].getValue('beer_quality') == 2"
+        ACTIONS:
+        -   complete_quest:
+            - beer
+        GOTO: ok_beer
+        
+    -   REPLY: "I hope it turned out OK."
+        CONDITION: "quest['beer'].getValue('beer_quality') == 1"
+        ACTIONS:
+        -   complete_quest:
+            - beer
+        GOTO: bad_beer
+        
+    -   REPLY: "No promises on the the taste..."
+        CONDITION: "quest['beer'].getValue('beer_quality') < 0"
+        ACTIONS:
+        -   restart_quest:
+            - beer
+        GOTO: poisonous_beer
+        
+-   ID: best_beer
+    SAY: "[ Bart drinks the beer] Let the church bells ring!  This stuff is\
+       \ awesome!"
+    RESPONSES:
+    -   REPLY: "Glad you like it!"
+        GOTO: old_pals
+        
+-   ID: good_beer
+    SAY: "[ Bart drinks the beer] Nice job, Stranger.  You may fit in around\
+       \ here after all."
+    RESPONSES:
+    -   REPLY: "Everyone likes a good brew."
+        GOTO: old_pals
+        
+-   ID: decent_beer
+    SAY: "[ Bart drinks the beer] It's got a decent bite, that's for sure.\
+       \ Drinkable, anyway."
+    RESPONSES:
+    -   REPLY: "A couple more batches and I can hopefully work the kinks out."
+        GOTO: old_pals
+        
+-   ID: ok_beer
+    SAY: "[ Bart drinks the beer] Well, it's beer-like.  Odd aftertaste,\
+       \ though."
+    RESPONSES:
+    -   REPLY: "Yeah, it could use some malt and hops, but it was the best I\
+           \ could do considering."
+        GOTO: old_pals
+        
+-   ID: bad_beer
+    SAY: "[ Bart drinks the beer, makes a face] You promise that this.. this...\
+       \ stuff will get me drunk???"
+    RESPONSES:
+    -   REPLY: "It ought to, if you drink enough of it."
+        GOTO: old_pals
+        
+-   ID: poisonous_beer
+    SAY: "[ Bart drinks the beer, then sits down fast.] Oh... I uh... hmmm...\
+       \ are.. uh, you sure you did this right? [vomits]"
+    RESPONSES:
+    -   REPLY: "Whoa... that's those old yams... yeah, gotta be the yams. My\
+           \ bad.  I'll try again."
+        GOTO: old_pals
+        
+-   ID: gratitude
+    SAY: "Ah, Mysterious Stranger, Braumeister of the Frozen North.   Now, if\
+       \ we can only get that still up and running my good chap!"
+    RESPONSES:
+    -   REPLY: "I got some ideas on that, Bart... "
+        GOTO: old_pals
+        
+...

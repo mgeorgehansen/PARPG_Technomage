@@ -1,0 +1,18 @@
+Inventory images:
+(c) 2009 PARPG development team, http://www.parpg.net
+
+Files:
+game/gui/inv_images/*.png
+
+Attribution:
+gaspard (+ justinoperable?) >> inv_giftbox.png
+justinoperable >> inv_instant_taters.png inv_potato.png inv_yam.png inv_yeast_bag.png inv_meathook.png inv_pot.png 
+zeli >> inv_box.png
+q_x >> inv_wood.png inv_water_pure.png inv_water_muddy.png inv_boots.png inv_grain.png inv_grain_bag.png inv_pocketknife.png inv_beer_full.png inv_beer_bottle_empty.png inv_pamphlet.png
+sirren >> *.png, expect the graphics attributed above
+
+Licensed under:
+http://creativecommons.org/licenses/by-sa/3.0/
+
+Legal code:
+http://creativecommons.org/licenses/by-sa/3.0/legalcode

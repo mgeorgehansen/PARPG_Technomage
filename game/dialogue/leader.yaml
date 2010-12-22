@@ -1,0 +1,581 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Kimmo Niitty
+AVATAR_PATH: gui/portraits/leader.png
+START_SECTION: main_dialog
+SECTIONS:
+-   ID: main_dialog
+    SAY: "What do you want?"
+    ACTIONS:
+    -   meet:
+        - kimmo
+    RESPONSES:
+    -   REPLY: "Nice office you have here."
+        GOTO: feedback_office
+        
+    -   REPLY: "Tell me about this place."
+        GOTO: feedback_community
+        
+    -   REPLY: "You are the one running things around here?"
+        GOTO: feedback_leader
+        
+    -   REPLY: "Where can I get some booze around here?"
+        GOTO: help_alcohol
+        
+    -   REPLY: "Have you seen Pekko around?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: pekko_missing
+        
+    -   REPLY: "Your brother is dead.  I think he was murdered."
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko') and not\
+           \ quest['fedex'].getValue('accused_of_murder')"
+        GOTO: pekko_dead
+        
+    -   REPLY: "I want to talk to about about your brother's murder."
+        CONDITION: "quest['fedex'].getValue('accused_of_murder')"
+        ACTIONS:
+        -   set_quest_variable: &id001
+                quest: fedex
+                value: true
+                variable: murder_report_to_kimmo
+        GOTO: pekko_murdered
+        
+    -   REPLY: "Why did you have your brother killed?"
+        CONDITION: "quest['fedex'].isGoalValue('bart_confesses')"
+        GOTO: confront_kimmo
+        
+    -   REPLY: "I managed to create some palatable beer..."
+        CONDITION: "quest['beer'].getValue('beer_quality') >= 1"
+        GOTO: gratitude
+        
+    -   REPLY: "See you later."
+        GOTO: end
+        
+-   ID: help_alcohol
+    SAY: "Well, if you've got enough to pay him, Jacob can set you up, over at\
+       \ the Inn."
+    RESPONSES:
+    -   REPLY: "That Jacob must be an important guy around here!"
+        GOTO: feedback_jacob
+        
+    -   REPLY: "No competition, huh?  Must be nice for him."
+        GOTO: booze_business
+        
+-   ID: feedback_jacob
+    SAY: "Pshaw!  He's a shopkeeper.  It's me who runs thing around here!"
+    RESPONSES:
+    -   REPLY: "Oh, so you're the big cheese!"
+        GOTO: feedback_leader
+        
+    -   REPLY: "I seem to have touched a nerve... change of subject, Kimmo..."
+        GOTO: main_dialog
+        
+-   ID: booze_business
+    SAY: "Yes.  A nice little monopoly he's set up."
+    RESPONSES:
+    -   REPLY: "Sounds like you would not be opposed to ... alternate sources\
+           \ of alcohol?"
+        GOTO: beer_competition
+        
+    -   REPLY: "Huh, interesting."
+        GOTO: main_dialog
+        
+-   ID: beer_competition
+    SAY: "[Narrows eyes] I think I see where you are going with this.  I cannot\
+       \ challenge Jacob directly on this... but I can look the other way, too"
+    RESPONSES:
+    -   REPLY: "Duly noted."
+        GOTO: main_dialog
+        
+-   ID: feedback_leader
+    SAY: "I prefer to think of myself as providing `gentle guidance`. Someone\
+       \ has to keep the community in shape.  \nWe have to work together to\
+       \ survive.  \nAnd you know... without proper leadership the community\
+       \ would decay to 'every man for himself'."
+    RESPONSES:
+    -   REPLY: "Well, as long as the Leader is well, taken care of, eh?"
+        GOTO: criticize_lifestyle
+        
+    -   REPLY: "Someone has to be foundation; to help hold everything together"
+        GOTO: main_dialog
+        
+-   ID: criticize_lifestyle
+    SAY: "I only take what I need to be most... efficient."
+    RESPONSES:
+    -   REPLY: "Efficient, gotcha."
+        GOTO: main_dialog
+        
+-   ID: feedback_office
+    SAY: "You like it, huh?  I figure it's my reward for all the hard years.\
+       \ Things have quieted down recently, and they should stay that way."
+    RESPONSES:
+    -   REPLY: "Quiet, huh. I wonder how long it will last."
+        GOTO: talk_moving
+        
+    -   REPLY: "It suits you."
+        GOTO: back
+        
+    -   REPLY: "Well, it sure is fancy.  Good to be the man at the top, huh?"
+        GOTO: criticize_lifestyle
+        
+-   ID: feedback_community
+    SAY: "Ok ... where should I start."
+    RESPONSES:
+    -   REPLY: "Begin at the beginning, I guess - What's the story behind this\
+           \ place?"
+        GOTO: explain_origins
+        
+    -   REPLY: "Tell me about your brother, Pekko."
+        CONDITION: "quest.hasActiveQuest('fedex')"
+        GOTO: explain_pekko
+        
+    -   REPLY: "Tell me about Jacob."
+        CONDITION: "pc.met('jacob')"
+        GOTO: explain_jacob
+        
+    -   REPLY: "Tell me about Janie."
+        CONDITION: "pc.met('janie')"
+        GOTO: explain_janie
+        
+    -   REPLY: "Tell me about Bart."
+        CONDITION: "pc.met('bart')"
+        GOTO: explain_bart
+        
+    -   REPLY: "Tell me about your mother,  Aino."
+        CONDITION: "pc.met('ma')"
+        GOTO: explain_ma
+        
+    -   REPLY: "Tell me about Helja."
+        CONDITION: "pc.met('helja')"
+        GOTO: explain_helja
+        
+    -   REPLY: "Tell me about Matti."
+        CONDITION: "pc.met('matti')"
+        GOTO: explain_matti
+        
+    -   REPLY: "Tell me about Skwisgaar."
+        CONDITION: "pc.met('skwisgaar')"
+        GOTO: explain_skwisgaar
+        
+    -   REPLY: "Anyone else I should know about?"
+        GOTO: explain_others
+        
+    -   REPLY: "I think I got what I came for."
+        GOTO: main_dialog
+        
+-   ID: explain_others
+    SAY: "Well, we have the usual mixed bag of folks.  Everyone works together\
+       \ to keep this place running.  I don't like to talk about folks that\
+       \ aren't mutual aquainances, though."
+    RESPONSES:
+    -   REPLY: "Oh, OK, I'll meet the locals and get back to you."
+        GOTO: back
+        
+-   ID: explain_skwisgaar
+    SAY: "Skwisgaar was Norwegian special forces.  He was sent here during the\
+       \ war to help the Finnish resistance in occupied territories.  After what\
+       \ he's seen and done - he's lucky to be in as good shape as he is.  For\
+       \ some reason everyone here thinks he's Swedish."
+    RESPONSES:
+    -   REPLY: "Yeah, that dude has more than a few screws loose."
+        GOTO: back
+        
+-   ID: explain_matti
+    SAY: "Matti was just a kid when the bombs went off.  He's just not the\
+       \ brightest fellow.  Strong like and ox, too, and innocent as a lamb.\
+       \ Someone's got to shovel all this snow."
+    RESPONSES:
+    -   REPLY: "He seemed nice enough."
+        GOTO: back
+        
+    -   REPLY: "I think he may have been involved in your brother's murder"
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko') and\
+           \ quest['fedex'].getValue('murder_reported_to_kimmmo')"
+        ACTIONS:
+        -   set_quest_variable: &id002
+                quest: fedex
+                value: matti
+                variable: accused_of_murder
+        GOTO: accuse_matti
+        
+    -   REPLY: "I think he may have been involved in your brother's murder"
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko') and not\
+           \ quest['fedex'].getValue('murder_reported_to_kimmmo')"
+        GOTO: pekko_dead
+        
+-   ID: explain_helja
+    SAY: "Helja is a rock.  She's been here since the beginning.  Frankly, I\
+       \ don't know what I would do without her keeping track of stuff.  I am\
+       \ more of a motivator than an organizer."
+    RESPONSES:
+    -   REPLY: "She seems very good at her job."
+        GOTO: back
+        
+    -   REPLY: "Do you think you can tell her to release some supplies for my\
+           \ beer project"
+        CONDITION: "quest.hasActiveQuest('beer') and\
+           \ quest['beer'].isGoalValue('beer_instructions') and\
+           \ quest['beer'].getValue('beer_quality') > 0"
+        GOTO: beer_request
+        
+-   ID: beer_request
+    SAY: "Well, that project has no official backing [wink].  But if you have\
+       \ anything to trade her, she always has something extra."
+    RESPONSES:
+    -   REPLY: "Oh, I gotcha."
+        GOTO: feedback_community
+        
+-   ID: explain_ma
+    SAY: "I don't think I could have made all that you see here without Ma.\
+       \ She is like the spiritual center of our community, the one people go to\
+       \ when they have problems.  I don't know what we would do without her."
+    RESPONSES:
+    -   REPLY: "What is going to happen to her if you migrate south?"
+        GOTO: go_south
+        
+    -   REPLY: "She's clearly a very important part of your society."
+        GOTO: back
+        
+-   ID: go_south
+    SAY: "You've been talking to my brother, haven't you!?!?  Him and his fool\
+       \ ideas.  It's just a harsh winter.  Not even as bad as the first couple\
+       \ after the war. We are staying put, and that's that!"
+    RESPONSES:
+    -   REPLY: "But Aino is not going to live forever, and it is getting\
+           \ cold... maybe Pekko is right..."
+        GOTO: argue_migration
+        
+    -   REPLY: "Well, I guess that's settled.  Where is your brother, anyway, I\
+           \ wonder..."
+        GOTO: back
+        
+    -   REPLY: "Actually, I am trying to find your Brother, have you seen him?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: pekko_missing
+        
+-   ID: argue_migration
+    SAY: "It's ridiculous.  We aren't moving.  How can we pack up after all\
+       \ we've invested in this place?"
+    RESPONSES:
+    -   REPLY: "I suppose it depends how long you can stay fed."
+        GOTO: main_dialog
+        
+-   ID: explain_janie
+    SAY: "Janie's a tough kid - and a good fighter.  Quick with a knife and an\
+       \ acid tongue.  I remember when Pekko brought her in.  She was really\
+       \ just a kid then, couldn't have been more than 5 or 6.  Probably the\
+       \ first act of kindness she ever saw.  She turned out alright, even if\
+       \ she is a little bossy."
+    RESPONSES:
+    -   REPLY: "Bossy is one way to put it."
+        GOTO: back
+        
+-   ID: explain_bart
+    SAY: "Bart is something of a slacker.  But, hell, he was here before the\
+       \ rest of us.  When we found this place, he was trying to drink himself\
+       \ to death on the liquor store.  We probably ended up saving his life by\
+       \ rationing the alcohol.  Still, he can be ... useful."
+    RESPONSES:
+    -   REPLY: "I would have thought alcholism would have been eradicated by\
+           \ now..."
+        GOTO: back
+        
+    -   REPLY: "Drunk or not, I think he may have been involved in your\
+           \ brother's murder"
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko') and\
+           \ quest['fedex'].getValue('murder_reported_to_kimmmo')"
+        GOTO: accuse_bart
+        
+    -   REPLY: "Drunk or not, I think he may have been involved in your\
+           \ brother's murder"
+        CONDITION: "quest['fedex'].isGoalValue('found_pekko') and not\
+           \ quest['fedex'].getValue('murder_reported_to_kimmmo')"
+        GOTO: pekko_dead
+        
+-   ID: explain_jacob
+    SAY: "At the time, he seemed like a great addition.  I let him in some\
+       \ years back; we was a traveling salesman and fix-it type.  I thought it\
+       \ would work out for both us.  But he is not happy with his little shop.\
+       \ A very political character."
+    RESPONSES:
+    -   REPLY: "Wow, the steam heating was his idea, huh?  You really must need\
+           \ him."
+        GOTO: continue_jacob
+        
+-   ID: continue_jacob
+    SAY: "I'll say this for Jacob.  Without him, we'd never have the steam\
+       \ heating system.  Still the guy doesn't know his place, and some of his\
+       \ `loyal cronies` are a bad element."
+    RESPONSES:
+    -   REPLY: "Wow, the steam heating was his idea, huh?  You really must need\
+           \ him."
+        GOTO: feedback_jacob
+        
+    -   REPLY: "He certainly is pretty arrogant."
+        GOTO: back
+        
+-   ID: explain_pekko
+    SAY: "Ah, my brother the dreamer.  [sighs] He has no idea how the world\
+       \ works.  It was the same before the war, and it's still the same.  I'll\
+       \ miss him.  Always has a theory for everything.  And will talk your ear\
+       \ off if you let him."
+    RESPONSES:
+    -   REPLY: "What do you mean, `miss him`?  Where is he going?"
+        GOTO: kimmo_slip
+        
+    -   REPLY: "You do know he's missing, right?"
+        CONDITION: "quest.hasActiveQuest('fedex') and not\
+           \ quest['fedex'].isGoalValue('found_pekko')"
+        GOTO: pekko_missing
+        
+    -   REPLY: "What if he's right about the weather?  That's it's getting\
+           \ worse?  You can't stay here."
+        GOTO: argue_migration
+        
+    -   REPLY: "It does seem pretty crazy, I agree.  How could it actually get\
+           \ colder?"
+        GOTO: back
+        
+-   ID: kimmo_slip
+    SAY: "Did I say that?  Weird.  I just meant that he's reckless... and one\
+       \ of these days he's might not make it back from one his little jaunts in\
+       \ the woods."
+    RESPONSES:
+    -   REPLY: "Yeah, it is weird.  I'm sure you would miss your brother if he\
+           \ was gone for good..."
+        GOTO: feedback_community
+        
+-   ID: pekko_missing
+    SAY: "What do you mean, `missing`?"
+    RESPONSES:
+    -   REPLY: "I mean, no one seems to know where I can find him."
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: true
+                variable: check_bart_left
+        GOTO: pekko_continue
+        
+-   ID: pekko_continue
+    SAY: "Oh, that Pekko.  I'm sure he's just out collecting samples, or\
+       \ measuring snowbanks or something.  You'd think he'd bring something\
+       \ useful back sometimes."
+    RESPONSES:
+    -   REPLY: "So you are pretty sure he's out of town at the moment."
+        GOTO: feedback_community
+        
+-   ID: explain_origins
+    SAY: "Well, of course Finland was overrun very early in the war.  My\
+       \ battalion fought on for a while, but due to reprisals against the\
+       \ civilians, we were forced to disband.  I grew up not too far from here,\
+       \ and by the time I made it home, there wasn't any Finland, or Russia, or\
+       \ NATO, or Warsaw pact or even any war left.  I hear the war was starting\
+       \ to spread into Africa, South America.  The whole world.  Almost\
+       \ everyone was dead by the time I started to fortify this place.  It has\
+       \ some tactical advantages - can shut out people, plus there was still a\
+       \ good supply of food and clothes and stuff.  We ate almost all the food\
+       \ in the first couple of 'dark' years.  Those were the hardest.  I didn't\
+       \ think we'd ever see the sun again.  I would have given up - my wife and\
+       \ kids killed by some nasty war virus, but Ma convinced me to fight on.\
+       \ That we might be the only people left in the world.  After a while,\
+       \ when the epidemics and fallout had mostly subsided, we began to get\
+       \ some travelers.  This place was quite the trading post for central\
+       \ Finland.  None of the bandit gangs would dare attack it.  We put in the\
+       \ green house when the winters started getting long and the supermarket\
+       \ stuff started to run low.   Jacob and his guys put the steam heating\
+       \ system in, and we'd have never survived the last few years without it."
+    RESPONSES:
+    -   REPLY: "I guess we all have our stories."
+        GOTO: back
+        
+-   ID: accuse_matti
+    SAY: "Matti? The dim kid?  You think he killed my brother?"
+    RESPONSES:
+    -   REPLY: "I can't be sure, but he certainly had access to the cistern.\
+           \ And he seems... unstable.  I could try to find proof it you like."
+        GOTO: investigate
+        
+-   ID: accuse_bart
+    SAY: "Bart, huh.  Do you have any proof?"
+    RESPONSES:
+    -   REPLY: "No proof, yet.  But something about his story isn't right."
+        GOTO: investigate
+        
+    -   REPLY: "Yes, in fact he told me the whole story.  Including your\
+           \ involvement"
+        CONDITION: "quest['fedex'].isGoalValue('drunkard_confessed')"
+        GOTO: confront_kimmo
+        
+    -   REPLY: "Camille.  She saw them together, right before he disappeared.\
+           \ And according to Janie, he never left the compound."
+        CONDITION: "quest['fedex'].isGoalValue('drunkard_evidence') and\
+           \ quest['fedex'].isGoalValue('check_pekko_left')"
+        GOTO: bart_evidence
+        
+-   ID: bart_evidence
+    SAY: "Uh-huh.  And that's it.  He was the last guy seen with him.  You\
+       \ going to hang your hat on that?"
+    RESPONSES:
+    -   REPLY: "Yes.  I am sure that Bart killed your brother."
+        ACTIONS:
+        -   set_quest_variable:
+                quest: fedex
+                value: true
+                variable: bart_in_trouble
+        GOTO: bart_convicted
+        
+    -   REPLY: "I guess it does sound a little flimsy at that.  I can look\
+           \ around a bit more."
+        GOTO: investigate
+        
+-   ID: bart_convicted
+    SAY: "I guess I will have a little talk with the old boy then."
+    RESPONSES:
+    -   REPLY: "Yes, you do that."
+        GOTO: main_dialog
+        
+-   ID: pekko_dead
+    SAY: "Dead?  Murdered... what are you talking about?"
+    RESPONSES:
+    -   REPLY: "I found his body in the cistern."
+        ACTIONS:
+        -   set_quest_variable: *id001
+        GOTO: pekko_murdered
+        
+-   ID: pekko_murdered
+    SAY: "What makes you think he was murdered?"
+    RESPONSES:
+    -   REPLY: "Well, I suppose it was the way his head was smashed in.  That\
+           \ and the fact someone had to dislocate both shoulders to fit him in\
+           \ hatch.  Other than that, it's just a guess."
+        GOTO: murder_continued
+        
+    -   REPLY: "It might have been an accident.  He could have just fallen in,\
+           \ I suppose.  I'll have to look into it further."
+        GOTO: investigate
+        
+-   ID: murder_continued
+    SAY: "So you have no proof... [steadies himself]  But this is terrible!  My\
+       \ brother dead. Ah, our poor mother!  Please don't tell her.  Let me."
+    RESPONSES:
+    -   REPLY: "Actually, Kimmo.  Bart confessed to me."
+        CONDITION: "quest['fedex'].isGoalValue('drunkard_confessed')"
+        GOTO: confront_kimmo
+        
+    -   REPLY: "No proof, but if I keep investigating, I am sure something more\
+           \ will turn up."
+        GOTO: investigate
+        
+    -   REPLY: "I think it must be Matti, the snow shoveler."
+        ACTIONS:
+        -   set_quest_variable: *id002
+        GOTO: accuse_matti
+        
+    -   REPLY: "I am pretty sure Bart is involved."
+        GOTO: accuse_bart
+        
+-   ID: investigate
+    SAY: "You know, uh... stranger.  I think it might be best if you let me\
+       \ handle it from here."
+    RESPONSES:
+    -   REPLY: "You want me to drop it?  Well, you are the big cheese around\
+           \ here."
+        ACTIONS:
+        -   complete_quest:
+            - fedex
+        GOTO: drop_quest
+        
+    -   REPLY: "No... no.  I don't think so.  It's going to keep me up not\
+           \ knowing.  I'll continue to poke around on my own."
+        GOTO: main_dialog
+        
+-   ID: drop_quest
+    SAY: "I think you are doing the right thing... whomever did this might\
+       \ start looking for you, too. [ahem] Assuming it wasn't just an\
+       \ accident."
+    RESPONSES:
+    -   REPLY: "Yeah, good point."
+        GOTO: main_dialog
+        
+-   ID: confront_kimmo
+    SAY: "WHAT?!  You come into MY office, tell me that my brother's been\
+       \ killed.  And you have to the nerve to accuse me of doing it?"
+    RESPONSES:
+    -   REPLY: "Yes, you sick fuck.  How could such a monster come to power\
+           \ here?  I hope the good people of this... this... place have enough\
+           \ nerve to hang you for it."
+        GOTO: end
+        
+    -   REPLY: "Yes.  Bart told me you put him up to it, for the booze.  But he\
+           \ didn't tell me why."
+        GOTO: why_murder
+        
+    -   REPLY: "Well.  Now we find out what you are going to do for me to keep\
+           \ this quiet."
+        GOTO: hush_money
+        
+-   ID: why_murder
+    SAY: "To be honest, I had to do it.  It was him or me.. him, or all of us.\
+       \ Well, Ma for certain.  He says we can't stay this far north.  But if we\
+       \ pack it up and move, I know a bunch of us will not make it.  And I\
+       \ don't think he's right about the weather, anyway.  You know he never\
+       \ graduated?"
+    RESPONSES:
+    -   REPLY: "You better hope you are right, or you're all dead anyway."
+        GOTO: back
+        
+-   ID: hush_money
+    SAY: "You gonna blackmail me, kid?  Don't count on it.  How about this:\
+       \ You keep your fool mouth shut, or you die next."
+    RESPONSES:
+    -   REPLY: "Is that a threat?  You think I am that easy to disappear?\
+           \ Well, you just try."
+        GOTO: end
+        
+    -   REPLY: "Hey, now...  I'd say we both have each other pretty good.\
+           \ Truce, then?"
+        GOTO: truce
+        
+-   ID: truce
+    SAY: "Funny way to put it.  But OK...  Don't think that bastard Jacob can\
+       \ protect you, though.   I need him.  I sure as shit don't need you."
+    RESPONSES:
+    -   REPLY: "I guess it will have to do"
+        GOTO: end
+        
+-   ID: talk_moving
+    SAY: "What do you mean, 'you wonder'?  There is no reason why we can't stay\
+       \ here indefinitly.  As long as no outsiders stir up trouble."
+    RESPONSES:
+    -   REPLY: "Oh, no doubt... this place is about as about as ideal as you\
+           \ can get in these times."
+        GOTO: back
+        
+    -   REPLY: "I don't know.  I am not sure that any place is permanent in\
+           \ this world.  It doesn't seem that stable to me."
+        GOTO: go_south
+        
+-   ID: gratitude
+    SAY: "Heh.  That's put the screws on old Jacob.  I owe you one for that.\
+       \ Let me know if you need a favor - or if his thugs give you any\
+       \ trouble."
+    RESPONSES:
+    -   REPLY: "Thanks, I'll keep that in mind."
+        GOTO: end
+        
+...

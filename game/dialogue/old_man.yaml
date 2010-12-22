@@ -1,0 +1,84 @@
+#   This file is part of PARPG.
+
+#   PARPG is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   PARPG is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+---
+NPC_NAME: Old Man
+AVATAR_PATH: gui/portraits/crazy_swede.png
+START_SECTION: main_dialogue
+SECTIONS:
+-   ID: main_dialogue
+    SAY: "The old man looks up at you from his chair with a dazed look upon\
+       \ his face.\n\"...Lucy?\""
+    ACTIONS:
+    -   meet:
+        - old_man
+    RESPONSES:
+    -   REPLY: "Who's Lucy?"
+        GOTO: help_find_lucy
+        
+    -   REPLY: "I found your ring."
+        CONDITION: "quest.hasActiveQuest('memories') and\
+           \ pc.inventory.hasItem('RustyWeddingRing')"
+        ACTIONS:
+        -   give_stuff:
+            - RustyWeddingRing
+        -   complete_quest:
+            - memories
+        GOTO: good_memories
+        
+    -   REPLY: "I don't have time for your delusions old man!"
+        GOTO: parting_shot
+        
+-   ID: good_memories
+    SAY: "An intense expression of joy spreads across the old man's face as\
+       \ you hand him the rusty wedding ring. He tries to mouth a word of\
+       \ thanks but is so overcome that he cannot utter a sound. The old man\
+       \ begins caressing the ring, oblivious to the decay and rot of the\
+       \ world around him."
+    RESPONSES:
+    -   REPLY: "[Walk away.]"
+        GOTO: end
+        
+-   ID: help_find_lucy
+    SAY: "The old man looks at you expectedly.\n\"Can you help me find\
+       \ Lucy?\""
+    RESPONSES:
+    -   REPLY: "Where is Lucy?"
+        GOTO: rusted_lockbox
+        
+    -   REPLY: "I have better things to do."
+        GOTO: parting_shot
+        
+-   ID: rusted_lockbox
+    SAY: "The old man gazes over his shoulder to the far side of the shanty\
+       \ where a metal lockbox rests on the floor.\n\"Can't open it any\
+       \ more... rusted...\""
+    RESPONSES:
+    -   REPLY: "I'll see what I can do."
+        ACTIONS:
+        -   start_quest:
+            - memories
+        GOTO: parting_shot
+        
+    -   REPLY: "Fix your own problems, old man!"
+        GOTO: parting_shot
+        
+-   ID: parting_shot
+    SAY: "The old man sighs and begins to stare remorsefully at the\
+       \ smouldering embers in the fireplace."
+    RESPONSES:
+    -   REPLY: "[Walk away.]"
+        GOTO: end
+        
+...
