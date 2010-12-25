@@ -14,8 +14,8 @@
 
 #   You should have received a copy of the GNU General Public License
 #   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
-"""This file contains the GameSceneController that handles 
-input when the game is exploring a scene"""
+"""This file contains the GameSceneController that handles input when the game
+   is exploring a scene"""
 
 
 from datetime import datetime
@@ -139,6 +139,9 @@ class GameSceneController(ControllerBase):
         if(key_val == key.F10):
             # F10 shows/hides the console
             self.engine.getGuiManager().getConsole().toggleShowHide()
+        if(key_val == key.C):
+            # C opens and closes the character screen.
+            self.view.hud.toggleCharacterScreen()
         if(key_val == key.I):
             # I opens and closes the inventory
             self.view.hud.toggleInventory()

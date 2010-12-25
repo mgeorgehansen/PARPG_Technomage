@@ -36,6 +36,7 @@ class MainMenuView(ViewBase):
         self.load_game_callback = None
         self.quit_callback = None
         self.main_menu = None
+        self.character_screen = None
         
     def showMenu(self):
         """"Shows the main menu"""
@@ -49,7 +50,10 @@ class MainMenuView(ViewBase):
 
     def initalizeMainMenu(self, new_game, load_game, quit_game):
         """Initialized the main menu and sets the callbacks"""
+        # Set a simple background to display the main screen.
         self.main_menu_background = pychan.loadXML("gui/main_menu_background.xml")
+        
+        # Initialize the main menu screen.
         screen_mode = self.engine.getRenderBackend().getCurrentScreenMode()
         self.main_menu_background.width = screen_mode.getWidth()
         self.main_menu_background.height = screen_mode.getHeight()
@@ -64,14 +68,14 @@ class MainMenuView(ViewBase):
         menu_events["optionsButton"] = self.model.settings.onOptionsPress
         menu_events["quitButton"] = self.quitGame
         self.main_menu.mapEvents(menu_events)
+        
         self.initializeQuitDialog()
     
-        
     def newGame(self):
         """Called when user request to start a new game.
            @return: None"""
         self.new_game_callback()
-            
+    
     def loadGame(self):
         """ Called when the user wants to load a game.
             @return: None"""
