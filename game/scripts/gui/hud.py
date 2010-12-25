@@ -51,6 +51,7 @@ class Hud(object):
         self.model = controller.model
         self.settings = settings
         self.inventory = None
+        self.character_screen = None
 
         self.save_game_callback = callbacks['saveGame']
         self.load_game_callback = callbacks['loadGame']
@@ -160,7 +161,14 @@ class Hud(object):
         else:
             self.inventory.inventory_storage = self.inventory_storage
         self.refreshReadyImages()
-
+    
+    def initializeCharacterScreen(self):
+        """Initialize the character screen."""
+        # TODO Technomage 2010-12-24: 
+        if not self.character_screen:
+            self.character_screen = pychan.loadXML('gui/character_screen.xml')
+        
+    
     def initializeContextMenu(self):
         """Initialize the Context Menu
            @return: None"""
@@ -354,7 +362,15 @@ class Hud(object):
         if self.inventory == None:
             self.initializeInventory()
         self.inventory.toggleInventory(toggle_image)
-
+    
+    def toggleCharacterScreen(self):
+        if not self.character_screen:
+            self.initializeCharacterScreen()
+        if not self.character_screen.isVisible():
+            self.character_screen.show()
+        else:
+            self.character_screen.hide()
+    
     def refreshReadyImages(self):
         """Make the Ready slot images on the HUD be the same as those 
            on the inventory

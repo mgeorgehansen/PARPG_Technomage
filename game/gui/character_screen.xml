@@ -1,0 +1,10 @@
+<!--
+ * Buttons have a dimension of 95x20 pixels
+ * 3 pixels vertical spacing is foreseen between buttons
+ * 7 pixels spacing is foreseen above and below the buttons
+ * Total height should be num_button*20 + (num_button-1)*3 + 2*7
+-->
+<VBox name="CharacterScreen" padding="0" background_image="gui/main_menu/main_menu_background_under_buttons.png" position_technique="center:center" size="320,340">
+  <ImageButton name="startButton" up_image="gui/main_menu/new_game_plain.png" hover_image="gui/main_menu/new_game_hovered.png" down_image="gui/main_menu/new_game_pressed.png"/>
+  <ImageButton name="cancelButton"  up_image="gui/main_menu/exit_plain.png" hover_image="gui/main_menu/exit_hovered.png" down_image="gui/main_menu/exit_pressed.png"/>
+</VBox>

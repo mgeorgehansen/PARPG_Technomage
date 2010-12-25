@@ -16,6 +16,8 @@
 #   along with PARPG.  If not, see <http://www.gnu.org/licenses/
 
 from controllerbase import ControllerBase
+from charactercreationview import CharacterCreationView
+from charactercreationcontroller import CharacterCreationController
 from gamescenecontroller import GameSceneController
 from gamesceneview import GameSceneView
 
@@ -29,17 +31,9 @@ if False:
 class MainMenuController(ControllerBase):
     """Controller for handling the main menu state"""
 
-    def __init__(self,
-                 engine, 
-                 view, 
-                 model, 
-                 application):
+    def __init__(self, engine, view, model, application):
         """Constructor"""
-        ControllerBase.__init__(self,
-                                engine,
-                                view,
-                                model,
-                                application)
+        ControllerBase.__init__(self, engine, view, model, application)
     
         #this can be helpful for IDEs code analysis
         if False:
@@ -54,19 +48,27 @@ class MainMenuController(ControllerBase):
         self.view.initalizeMainMenu(self.newGame, self.loadGame, self.quitGame)
         self.view.showMenu()
         self.resetMouseCursor()
-           
+    
     def newGame(self):
-        """Starts a new game"""
-        view = GameSceneView(self.engine,
-                             self.model)
-        controller = GameSceneController(self.engine,
-                                         view,
-                                         self.model,
-                                         self.application)        
+        """Start a new game and switch to the character creation controller."""
+        view = CharacterCreationView(self.engine, self.model)
+        controller = CharacterCreationController(self.engine, view, self.model,
+                                                 self.application)
         self.application.view = view
         self.application.switchController(controller)
-        start_map = self.model.settings.get("PARPG", "Map")
-        self.model.changeMap(start_map)
+    
+#    def newGame(self):
+#        """Starts a new game"""
+#        view = GameSceneView(self.engine,
+#                             self.model)
+#        controller = GameSceneController(self.engine,
+#                                         view,
+#                                         self.model,
+#                                         self.application)        
+#        self.application.view = view
+#        self.application.switchController(controller)
+#        start_map = self.model.settings.get("PARPG", "Map")
+#        self.model.changeMap(start_map)
 
     def loadGame(self, *args, **kwargs):
         """Loads the game state
