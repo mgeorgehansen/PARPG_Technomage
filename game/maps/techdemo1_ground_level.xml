@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ascii"?>
 <map format="1.0" id="techdemo1_ground_level">
-	<import file="../objects/ground/snow/snow0/snow02.xml" />
+	<import file="../objects/tiles/snow/snow0/snow02.xml" />
 	<import file="../objects/agents/npcs/long_coat_female/long_coat_female.xml" />
 	<import file="../objects/agents/npcs/long_coat_male/long_coat_male.xml" />
 	<import file="../objects/agents/npcs/male_farmer_1/male_farmer_1.xml" />
@@ -12,8 +12,8 @@
 	<import file="../objects/scenery/burning_barrel/burning_barrel.xml" />
 	<import file="../objects/agents/player/player.xml" />
 	<import file="../objects/buildings/shanty/shanty-door.xml" />
-	<import file="../objects/buildings/container_house/container_house01.xml" />
-	<import file="../objects/buildings/container_house/container_house02.xml" />
+	<import file="../objects/buildings/container_house/container_house_01.xml" />
+	<import file="../objects/buildings/container_house/container_house_02.xml" />
 	<layer grid_type="square" id="GroundLayer" pathing="cell_edges_only" rotation="0.0" transparency="0" x_offset="0.0" x_scale="1.0" y_offset="0.0" y_scale="1.0">
 		<instances>
 			<i ns="PARPG" o="snow02" r="0" x="-125.0" y="-125.0" z="0.0" />

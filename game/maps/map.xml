@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="ascii"?>
 <map format="1.0" id="Mall">
-	<import file="../objects/ground/snow/snow0/snow02.xml"></import>
-	<import file="../objects/ground/gravel/gravel.xml"></import>
+	<import file="../objects/tiles/snow/snow0/snow02.xml"></import>
+	<import file="../objects/tiles/gravel/gravel.xml"></import>
 	<import file="../objects/buildings/guard_tower/guard_tower.xml"></import>
-	<import file="../objects/buildings/container_house/container_house01.xml"></import>
-	<import file="../objects/buildings/container_house/container_house02.xml"></import>
-	<import file="../objects/ground/block/block.xml"></import>
+	<import file="../objects/buildings/container_house/container_house_01.xml"></import>
+	<import file="../objects/buildings/container_house/container_house_02.xml"></import>
+	<import file="../objects/tiles/block/block.xml"></import>
 	<import file="../objects/scenery/burning_barrel/burning_barrel.xml"></import>
 	<import file="../objects/buildings/gate/pillar1/p1_s0.xml"></import>
 	<import file="../objects/buildings/gate/pillar1/p1_s1.xml"></import>
@@ -28,15 +28,15 @@
 	<import file="../objects/scenery/bed/bed_b/bed_b.xml"></import>
 	<import file="../objects/scenery/bed/bed_c/bed_c.xml"></import>
 	<import file="../objects/scenery/chairs/black_chair/standing/black_chair_standing.xml"></import>
-	<import file="../objects/scenery/fence_wooden/fence_wooden01.xml"></import>
-	<import file="../objects/scenery/fence_wooden/fence_wooden02.xml"></import>
-	<import file="../objects/scenery/tables/old/huge_table/old_huge1.xml"></import>
-	<import file="../objects/scenery/tables/old/huge_table/old_huge10.xml"></import>
-	<import file="../objects/scenery/tables/old/huge_table/old_huge5.xml"></import>
-	<import file="../objects/scenery/tables/old/small_table/old_small2.xml"></import>
-	<import file="../objects/scenery/tables/old/plastic_round/plastic_round1.xml"></import>
-	<import file="../objects/scenery/benches/short_bench/short_bench1.xml"></import>
-	<import file="../objects/scenery/benches/short_bench/short_bench3.xml"></import>
+	<import file="../objects/scenery/fence_wooden/fence_wooden_01.xml"></import>
+	<import file="../objects/scenery/fence_wooden/fence_wooden_02.xml"></import>
+	<import file="../objects/scenery/tables/old/huge_table/old_huge_1.xml"></import>
+	<import file="../objects/scenery/tables/old/huge_table/old_huge_10.xml"></import>
+	<import file="../objects/scenery/tables/old/huge_table/old_huge_5.xml"></import>
+	<import file="../objects/scenery/tables/old/small_table/old_small_2.xml"></import>
+	<import file="../objects/scenery/tables/old/plastic_round/plastic_round_1.xml"></import>
+	<import file="../objects/scenery/benches/short_bench/short_bench_1.xml"></import>
+	<import file="../objects/scenery/benches/short_bench/short_bench_3.xml"></import>
 	<import file="../objects/buildings/gate/archway_gate.xml"></import>
 	<layer transparency="0" id="GroundLayer" x_offset="0.0" x_scale="1.0" pathing="cell_edges_only" y_scale="1.0" grid_type="square" y_offset="0.0" rotation="0.0">
 		<instances>
