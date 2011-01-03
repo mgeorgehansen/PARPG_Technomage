@@ -9565,8 +9565,8 @@
 	<layer transparency="0" id="ObjectLayer" x_offset="0.0" x_scale="1.0" pathing="cell_edges_and_diagonals" y_scale="1.0" grid_type="square" y_offset="0.0" rotation="0.0">
 		<instances>
 			<i o="guard_tower" r="315" x="4.0" y="-17.0" stackpos="0" z="0.0"></i>
-			<i o="container_house01" r="0" x="-1.0" y="2.0" stackpos="0" z="0.0"></i>
-			<i o="container_house02" r="0" x="14.0" y="4.0" stackpos="0" z="0.0"></i>
+			<i o="container_house_01" r="0" x="-1.0" y="2.0" stackpos="0" z="0.0"></i>
+			<i o="container_house_02" r="0" x="14.0" y="4.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="14.0" y="4.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="12.0" y="0.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="13.0" y="0.0" stackpos="0" z="0.0"></i>
@@ -9622,7 +9622,7 @@
 			<i o="block" r="0" x="0.0" y="-3.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="1.0" y="-3.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="1.0" y="-2.0" stackpos="0" z="0.0"></i>
-			<i o="container_house01" r="0" x="3.0" y="-47.0" stackpos="0" z="0.0"></i>
+			<i o="container_house_01" r="0" x="3.0" y="-47.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="1.0" y="-43.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="2.0" y="-43.0" stackpos="0" z="0.0"></i>
 			<i o="block" r="0" x="3.0" y="-43.0" stackpos="0" z="0.0"></i>
