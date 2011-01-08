@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Rasmus
 AVATAR_PATH: gui/portraits/farm_boy_temp.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hi, I'm Rasmus.  What can I do for you?"
     RESPONSES:

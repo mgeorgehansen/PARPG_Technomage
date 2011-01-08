@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Farmer Manslow
 AVATAR_PATH: gui/portraits/farmer.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Who the hell are you??"
     ACTIONS:

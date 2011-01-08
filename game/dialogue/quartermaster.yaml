@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Helja
 AVATAR_PATH: gui/portraits/quartermaster.jpg
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hello, there!  A new addition to the labor pool, I see."
     ACTIONS:

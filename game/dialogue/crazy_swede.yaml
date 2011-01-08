@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Skwisgaar the Crazy Swede
 AVATAR_PATH: gui/portraits/crazy_swede.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Chop!  Chop!  Chopity Chop-chop?"
     ACTIONS:

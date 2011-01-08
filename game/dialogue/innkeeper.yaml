@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Jacob
 AVATAR_PATH: gui/portraits/innkeeper.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hi there, Stranger!  Welcome to Jacob's.  How can I help you?"
     ACTIONS:

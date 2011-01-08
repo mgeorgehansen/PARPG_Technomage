@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Old Man
 AVATAR_PATH: gui/portraits/crazy_swede.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialogue
     SAY: "The old man looks up at you from his chair with a dazed look upon\
        \ his face.\n\"...Lucy?\""
@@ -29,7 +29,7 @@ DEFAULT_ROOT_SECTION:
     -   REPLY: "I don't have time for your delusions old man!"
         GOTO: parting_shot
         
-START_SECTIONS:
+GREETINGS:
 -   ID: found_ring
     SAY: "\"Lucy... Where is my Lucy?\""
     CONDITION: "quest.hasActiveQuest('memories') and\

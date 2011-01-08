@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Anyone
 AVATAR_PATH: gui/portraits/npc.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hello.  How can I help you?"
     RESPONSES:

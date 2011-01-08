@@ -159,11 +159,11 @@ class DialogueProcessor(object):
         """
         dialogue = self.dialogue
         root_dialogue_section = None
-        for root_section in dialogue.root_sections:
-            if (eval(root_section.condition, self.game_state)):
-                root_dialogue_section = root_section
+        for greeting in dialogue.greetings:
+            if (eval(greeting.condition, self.game_state)):
+                root_dialogue_section = greeting
         if (root_dialogue_section is None):
-            root_dialogue_section = dialogue.default_root_section
+            root_dialogue_section = dialogue.default_greeting
         
         return root_dialogue_section
     

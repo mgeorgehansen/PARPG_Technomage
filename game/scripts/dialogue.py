@@ -29,11 +29,11 @@ class Dialogue(object):
     Represents a complete dialogue and acts as a container for the dialogue
     data belonging to a particular NPC.
     """
-    __slots__ = ['npc_name', 'avatar_path', 'default_root_section',
-                 'root_sections', 'sections']
+    __slots__ = ['npc_name', 'avatar_path', 'default_greeting',
+                 'greetings', 'sections']
     
-    def __init__(self, npc_name, avatar_path, default_root_section,
-                 root_sections=None, sections=None):
+    def __init__(self, npc_name, avatar_path, default_greeting, greetings=None,
+                 sections=None):
         """
         Initialize a new L{Dialogue} instance.
         
@@ -42,25 +42,25 @@ class Dialogue(object):
         @param avatar_path: path to the image that should be displayed as the
             NPC's avatar.
         @type avatar_path: basestring
-        @param default_root_section: section of dialogue that should be
+        @param default_greeting: section of dialogue that should be
             displayed when the dialogue is first initiated and no other start
             sections are available.
-        @type default_root_section: L{DialogueSection}
-        @param root_sections: sections of dialogue defining the conditions
+        @type default_greeting: L{DialogueSection}
+        @param greetings: sections of dialogue defining the conditions
             under which each should be displayed when the dialogue is first
             initiated.
-        @type root_section_references: list of 
-            L{RootDialogueSections<RootDialogueSection>}
+        @type greetings: list of 
+            L{RootDialogueSections<DialogueGreeting>}
         @param sections: sections of dialogue that make up this
             L{Dialogue} instance.
         @type sections: list of L{DialogueSections<DialogueSection>}
         """
         self.npc_name = npc_name
         self.avatar_path = avatar_path
-        self.default_root_section = default_root_section
-        self.root_sections = root_sections
+        self.default_greeting = default_greeting
+        self.greetings = greetings
         self.sections = OrderedDict()
-        all_sections = sections + [default_root_section] + root_sections
+        all_sections = sections + [default_greeting] + greetings
         if (__debug__):
             section_ids = [section.id for section in all_sections]
         for section in all_sections:
@@ -124,7 +124,7 @@ class DialogueSection(DialogueNode):
             self.responses = list(responses)
 
 
-class RootDialogueSection(DialogueSection):
+class DialogueGreeting(DialogueSection):
     """
     Represents a root section of dialogue in a L{Dialogue} along with the
     conditional statement used to determine the whether this section should be
@@ -141,7 +141,7 @@ class RootDialogueSection(DialogueSection):
     
     def __init__(self, id_, condition, text, responses=None, actions=None):
         """
-        Initialize a new L{RootDialogueSection} instance.
+        Initialize a new L{DialogueGreeting} instance.
         
         @param id_: named used to uniquely identify the L{DialogueSection}
             within a L{Dialogue}.

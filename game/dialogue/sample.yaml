@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Friendly NPC
 AVATAR_PATH: gui/portraits/npc.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Things are tough around here, let me tell you our problems"
     RESPONSES:

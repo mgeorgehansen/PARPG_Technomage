@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Matti
 AVATAR_PATH: gui/portraits/snowshoveler.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: opening_dialog
     SAY: "Good to talk to someone, Matti could use a break"
     ACTIONS:

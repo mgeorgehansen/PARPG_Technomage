@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Bart The Drunkard
 AVATAR_PATH: gui/portraits/drunkard.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hey there, back up... no need to gang up on a poor guy!"
     RESPONSES:
