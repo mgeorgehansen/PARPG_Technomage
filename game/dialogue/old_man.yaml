@@ -15,31 +15,34 @@
 ---
 NPC_NAME: Old Man
 AVATAR_PATH: gui/portraits/crazy_swede.png
-START_SECTION: main_dialogue
-SECTIONS:
--   ID: main_dialogue
+DEFAULT_ROOT_SECTION:
+    ID: main_dialogue
     SAY: "The old man looks up at you from his chair with a dazed look upon\
        \ his face.\n\"...Lucy?\""
     ACTIONS:
     -   meet:
-        - old_man
+        -   old_man
     RESPONSES:
     -   REPLY: "Who's Lucy?"
         GOTO: help_find_lucy
         
-    -   REPLY: "I found your ring."
-        CONDITION: "quest.hasActiveQuest('memories') and\
-           \ pc.inventory.hasItem('RustyWeddingRing')"
-        ACTIONS:
-        -   give_stuff:
-            - RustyWeddingRing
-        -   complete_quest:
-            - memories
-        GOTO: good_memories
-        
     -   REPLY: "I don't have time for your delusions old man!"
         GOTO: parting_shot
         
+START_SECTIONS:
+-   ID: found_ring
+    SAY: "\"Lucy... Where is my Lucy?\""
+    CONDITION: "quest.hasActiveQuest('memories') and\
+       \ pc.inventory.hasItem('RustyWeddingRing')"
+    RESPONSES:
+    -   REPLY: "I found your ring."
+        ACTIONS:
+        -   give_stuff:
+            -   RustyWeddingRing
+        -   complete_quest:
+            -   memories
+        GOTO: good_memories
+SECTIONS:
 -   ID: good_memories
     SAY: "An intense expression of joy spreads across the old man's face as\
        \ you hand him the rusty wedding ring. He tries to mouth a word of\
@@ -68,7 +71,7 @@ SECTIONS:
     -   REPLY: "I'll see what I can do."
         ACTIONS:
         -   start_quest:
-            - memories
+            -   memories
         GOTO: parting_shot
         
     -   REPLY: "Fix your own problems, old man!"

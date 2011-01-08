@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Matti
 AVATAR_PATH: gui/portraits/snowshoveler.png
-START_SECTION: opening_dialog
-SECTIONS:
--   ID: opening_dialog
+DEFAULT_ROOT_SECTION:
+    ID: opening_dialog
     SAY: "Good to talk to someone, Matti could use a break"
     ACTIONS:
     -   meet:
@@ -46,6 +45,7 @@ SECTIONS:
     -   REPLY: "Hey, what's going on here?"
         GOTO: main_dialog
         
+SECTIONS:
 -   ID: main_dialog
     SAY: "Matti shovels the snow."
     RESPONSES:

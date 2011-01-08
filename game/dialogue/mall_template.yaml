@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Anyone
 AVATAR_PATH: gui/portraits/npc.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Hello.  How can I help you?"
     RESPONSES:
     -   REPLY: "I'm looking for stuff to make beer with "
@@ -39,6 +38,7 @@ SECTIONS:
     -   REPLY: "Whoa!  It talks!  Never mind"
         GOTO: end
         
+SECTIONS:
 -   ID: help_beer
     SAY: "I am always happy to give intimate details of our home to strangers,\
        \ shoot!"

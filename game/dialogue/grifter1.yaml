@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Cali
 AVATAR_PATH: gui/portraits/grifter_temp.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Hi there stranger.  Buy a gal a drink?"
     ACTIONS:
     -   meet:
@@ -42,6 +41,7 @@ SECTIONS:
     -   REPLY: "Sorry, I'm broke."
         GOTO: end
         
+SECTIONS:
 -   ID: help_beer
     SAY: "Trying to horn in on old Jacob here, huh?  I wouldn't if I were you."
     RESPONSES:

@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Ma Niitty
 AVATAR_PATH: gui/portraits/ma.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Why hello there... I don't recognize your face..."
     ACTIONS:
     -   meet:
@@ -48,6 +47,7 @@ SECTIONS:
     -   REPLY: "Sorry to bother you, I didn't realize you were awake"
         GOTO: end
         
+SECTIONS:
 -   ID: dead_pekko
     SAY: "Oh, don't be silly.  I'm sure he is just off in the wilderness again"
     RESPONSES:

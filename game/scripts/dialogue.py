@@ -29,10 +29,11 @@ class Dialogue(object):
     Represents a complete dialogue and acts as a container for the dialogue
     data belonging to a particular NPC.
     """
-    __slots__ = ['npc_name', 'avatar_path', 'start_section_id', 'sections']
+    __slots__ = ['npc_name', 'avatar_path', 'default_root_section',
+                 'root_sections', 'sections']
     
-    def __init__(self, npc_name, avatar_path, start_section_id,
-                 sections=None):
+    def __init__(self, npc_name, avatar_path, default_root_section,
+                 root_sections=None, sections=None):
         """
         Initialize a new L{Dialogue} instance.
         
@@ -41,55 +42,42 @@ class Dialogue(object):
         @param avatar_path: path to the image that should be displayed as the
             NPC's avatar.
         @type avatar_path: basestring
-        @param start_section_id: ID of the L{DialogueSection} that should be
-            displayed when the dialogue is first initiated.
-        @type start_section_id: basestring
+        @param default_root_section: section of dialogue that should be
+            displayed when the dialogue is first initiated and no other start
+            sections are available.
+        @type default_root_section: L{DialogueSection}
+        @param root_sections: sections of dialogue defining the conditions
+            under which each should be displayed when the dialogue is first
+            initiated.
+        @type root_section_references: list of 
+            L{RootDialogueSections<RootDialogueSection>}
         @param sections: sections of dialogue that make up this
             L{Dialogue} instance.
         @type sections: list of L{DialogueSections<DialogueSection>}
         """
         self.npc_name = npc_name
         self.avatar_path = avatar_path
+        self.default_root_section = default_root_section
+        self.root_sections = root_sections
         self.sections = OrderedDict()
+        all_sections = sections + [default_root_section] + root_sections
         if (__debug__):
-            section_ids = [section.id for section in sections]
-        if (sections is not None):
+            section_ids = [section.id for section in all_sections]
+        for section in all_sections:
             # Sanity check: All DialogueResponses should have next_section_id
             # attributes that refer to valid DialogueSections in the Dialogue.
-            for section in sections:
-                if (__debug__):
-                    for response in section.responses:
-                        assert response.next_section_id in section_ids + \
-                            ['end', 'back'], \
-                            '"{0}" is not a valid DialogueSection ID'\
-                            .format(response.next_section_id)
-                self.sections[section.id] = section
-        assert start_section_id in self.sections.keys(), \
-            'start_section_id "{0}" not found in specified sections'\
-            .format(start_section_id)
-        self.start_section_id = start_section_id
+            if (__debug__):
+                for response in section.responses:
+                    assert response.next_section_id in section_ids + \
+                        ['end', 'back'], ('"{0}" does not refer to a ' 
+                                          'DialogueSection in this Dialogue')\
+                        .format(response.next_section_id)
+            self.sections[section.id] = section
     
     def __str__(self):
         """Return the string representation of a L{Dialogue} instance."""
-        string_representation = (
-            ('Dialogue(npc_id={0.npc_name}, avatar_path={0.avatar_path}, '
-             'start_section_id={0.start_section_id}, ...)').format(self)
-        )
+        string_representation = 'Dialogue(npc_id={0.npc_name})'.format(self)
         return string_representation
-    
-    def getRootSection(self):
-        """
-        Return the root DialogueSection.
-        
-        @raise RuntimeError: L{start_section_id} contains an invalid section
-            ID.
-        """
-        try:
-            root_section = self.sections[self.start_section_id]
-        except (IndexError,):
-            raise RuntimeError('the DialogueSection ID "{0}" is not valid or '
-                               'does not refer to a valid DialogueSection')
-        return root_section
 
 
 class DialogueNode(object):
@@ -112,15 +100,15 @@ class DialogueNode(object):
 
 class DialogueSection(DialogueNode):
     """DialogueNode that represents a distinct section of the dialogue."""
-    __slots__ = ['id', 'text', 'actions', 'responses']
+    __slots__ = ['id', 'text', 'responses', 'actions']
     
-    def __init__(self, id, text, responses=None, actions=None):
+    def __init__(self, id_, text, responses=None, actions=None):
         """
         Initialize a new L{DialogueSection} instance.
         
-        @param id: named used to uniquely identify the L{DialogueSection}
+        @param id_: named used to uniquely identify the L{DialogueSection}
             within a L{Dialogue}.
-        @type id: basestring
+        @type id_: basestring
         @param text: text displayed as the NPC's part of the L{Dialogue}.
         @type text: basestring
         @param responses: possible responses that the player can choose from.
@@ -129,10 +117,49 @@ class DialogueSection(DialogueNode):
             L{DialogueSection} is reached.
         @type actions: list of L{DialogueActions<DialogueAction>}
         """
+        print(id_, text, responses, actions)
         DialogueNode.__init__(self, text=text, actions=actions)
-        self.id = id
+        self.id = id_
         if (responses is not None):
             self.responses = list(responses)
+
+
+class RootDialogueSection(DialogueSection):
+    """
+    Represents a root section of dialogue in a L{Dialogue} along with the
+    conditional statement used to determine the whether this section should be
+    displayed first upon dialogue initiation.
+    
+    @ivar id: Name used to uniquely identify the L{DialogueSection} to which
+        the L{DialogueRootSectionReference} points.
+    @type id: basestring
+    @ivar condition: Boolean Python expression used to determine if the
+        L{DialogueSection} referenced is a valid starting section.
+    @type condition: basestring
+    """
+    __slots__ = ['id', 'condition', 'text', 'actions', 'responses']
+    
+    def __init__(self, id_, condition, text, responses=None, actions=None):
+        """
+        Initialize a new L{RootDialogueSection} instance.
+        
+        @param id_: named used to uniquely identify the L{DialogueSection}
+            within a L{Dialogue}.
+        @type id_: basestring
+        @param condition: Boolean Python expression used to determine if this
+            root dialogue section should be displayed.
+        @type condition: basestring
+        @param text: text displayed as the NPC's part of the L{Dialogue}.
+        @type text: basestring
+        @param responses: possible responses that the player can choose from.
+        @type responses: list of L{DialogueResponses<DialogueResponse>}
+        @param actions: dialogue actions that should be executed when the
+            L{DialogueSection} is reached.
+        @type actions: list of L{DialogueActions<DialogueAction>}
+        """
+        DialogueSection.__init__(self, id_=id_, text=text, responses=responses,
+                                 actions=actions)
+        self.condition = condition
 
 
 class DialogueResponse(DialogueNode):
@@ -142,8 +169,7 @@ class DialogueResponse(DialogueNode):
     """
     __slots__ = ['text', 'actions', 'condition', 'next_section_id']
     
-    def __init__(self, text, next_section_id, actions=None,
-                 condition=None):
+    def __init__(self, text, next_section_id, actions=None, condition=None):
         """
         Initialize a new L{DialogueResponse} instance.
         

@@ -148,20 +148,41 @@ class DialogueProcessor(object):
         self._game_state = game_state
         self._in_dialogue = False
     
+    def getRootDialogueSection(self):
+        """
+        Evaluate the L{RootDialogueSections<RootDialogueSection>} conditions
+        and return the valid L{DialogueSection} which should be displayed
+        first.
+        
+        @return: Valid root dialogue section.
+        @rtype: L{DialogueSection}
+        """
+        dialogue = self.dialogue
+        root_dialogue_section = None
+        for root_section in dialogue.root_sections:
+            if (eval(root_section.condition, self.game_state)):
+                root_dialogue_section = root_section
+        if (root_dialogue_section is None):
+            root_dialogue_section = dialogue.default_root_section
+        
+        return root_dialogue_section
+    
     def initiateDialogue(self):
         """
-        Prepare the L{DialogueProcessor} to process the L{Dialogue} by pushing the
-        starting L{DialogueSection} onto the L{dialogue_section_stack}.
+        Prepare the L{DialogueProcessor} to process the L{Dialogue} by pushing
+        the starting L{DialogueSection} onto the L{dialogue_section_stack}.
         
         @raise TypeError: Unable to determine the root L{DialogueSection}
             defined by the L{Dialogue}.
         """
+        if (self.in_dialogue):
+            self.endDialogue()
         dialogue = self.dialogue
         try:
-            root_dialogue_section = dialogue.getRootSection()
+            root_dialogue_section = self.getRootDialogueSection()
         except (RuntimeError,) as error:
             self._logger.error(str(error))
-            raise TypeError(('unable to determine start DialogueSection for '
+            raise TypeError(('unable to determine root DialogueSection for '
                              '{0}').format(dialogue))
         else:
             self.dialogue_section_stack.append(root_dialogue_section)

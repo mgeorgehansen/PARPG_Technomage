@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Bart The Drunkard
 AVATAR_PATH: gui/portraits/drunkard.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Hey there, back up... no need to gang up on a poor guy!"
     RESPONSES:
     -   REPLY: "Gang up?  There's only one of me!"
@@ -41,6 +40,7 @@ SECTIONS:
     -   REPLY: "Ha, you better sleep it off, buddy."
         GOTO: end
         
+SECTIONS:
 -   ID: first_impression
     SAY: "Oh... yeah... sorry.  My vision goes a little funny sometimes.\
        \ Name's Bart."

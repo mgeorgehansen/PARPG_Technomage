@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Synnove Niitty
 AVATAR_PATH: gui/portraits/synnove.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Hi there!  I don't recognize you.  Are you new here?"
     RESPONSES:
     -   REPLY: "Yes, I am new.  And who are you?"
@@ -47,6 +46,7 @@ SECTIONS:
     -   REPLY: "Never mind, thought you were someone else."
         GOTO: end
         
+SECTIONS:
 -   ID: meeting
     SAY: "My name's Synnove.  I live here."
     ACTIONS:
