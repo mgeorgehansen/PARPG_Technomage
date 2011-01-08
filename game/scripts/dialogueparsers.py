@@ -43,7 +43,8 @@ import textwrap
 import yaml
 
 from scripts import COPYRIGHT_HEADER
-from scripts.dialogue import Dialogue, DialogueSection, DialogueResponse
+from scripts.dialogue import (Dialogue, DialogueSection, DialogueResponse,
+    RootDialogueSection)
 from scripts.dialogueactions import DialogueAction
 
 def setup_logging():
@@ -190,16 +191,27 @@ class YamlDialogueParser(AbstractDialogueParser):
         dialogue_dict = OrderedDict()
         dialogue_dict['NPC_NAME'] = dialogue.npc_name
         dialogue_dict['AVATAR_PATH'] = dialogue.avatar_path
-        dialogue_dict['START_SECTION'] = dialogue.start_section_id
+        dialogue_dict['DEFAULT_ROOT_SECTION'] = \
+            self._representDialogueSection(dumper,
+                                           dialogue.default_root_section)
         # NOTE Technomage 2010-11-16: Dialogue stores its sections in an
         #     OrderedDict, so a round-trip load, dump, and load will preserve
         #     the order of DialogueSections.
-        sections_list_node = dumper.represent_list([])
-        sections_list = sections_list_node.value
-        for section in dialogue.sections.values():
-            section_node = self._representDialogueSection(dumper, section)
-            sections_list.append(section_node)
-        dialogue_dict['SECTIONS'] = sections_list_node
+        if (len(dialogue.root_sections) > 0):
+            root_sections_list_node = dumper.represent_list([])
+            root_sections_list = root_sections_list_node.value
+            for root_section in dialogue.root_sections:
+                root_section_node = \
+                    self._representRootDialogueSection(dumper, root_section)
+                root_sections_list.append(root_section_node)
+            dialogue_dict['ROOT_SECTIONS'] = root_sections_list_node
+        if (len(dialogue.setions) > 0):
+            sections_list_node = dumper.represent_list([])
+            sections_list = sections_list_node.value
+            for section in dialogue.sections.values():
+                section_node = self._representDialogueSection(dumper, section)
+                sections_list.append(section_node)
+            dialogue_dict['SECTIONS'] = sections_list_node
         
         for key, value in dialogue_dict.items():
             if (isinstance(key, yaml.Node)):
@@ -212,6 +224,27 @@ class YamlDialogueParser(AbstractDialogueParser):
                 value_node = dumper.represent_data(value)
             dialogue_node.value.append((key_node, value_node))
         return dialogue_node
+    
+    def _representRootDialogueSection(self, dumper, root_section):
+        root_section_node = dumper.represent_dict({})
+        root_section_dict = OrderedDict()
+        root_section_dict['ID'] = root_section.id
+        root_section_dict['CONDITION'] = dumper.represent_scalar(
+            'tag:yaml.org,2002:str',
+            root_section.condition,
+            style='"'
+        )
+        for key, value in root_section_dict.items():
+            if (isinstance(key, yaml.Node)):
+                key_node = key
+            else:
+                key_node = dumper.represent_data(key)
+            if (isinstance(value, yaml.Node)):
+                value_node = value
+            else:
+                value_node = dumper.represent_data(value)
+            root_section_node.value.append((key_node, value_node))
+        return root_section_node
     
     def _representDialogueSection(self, dumper, dialogue_section):
         section_node = dumper.represent_dict({})
@@ -312,7 +345,8 @@ class YamlDialogueParser(AbstractDialogueParser):
     def _constructDialogue(self, loader, yaml_node):
         npc_name = None
         avatar_path = None
-        start_section_id = None
+        default_root_section = None
+        root_sections = []
         sections = []
         
         try:
@@ -322,8 +356,18 @@ class YamlDialogueParser(AbstractDialogueParser):
                     npc_name = loader.construct_object(value_node)
                 elif (key == u'AVATAR_PATH'):
                     avatar_path = loader.construct_object(value_node)
-                elif (key == u'START_SECTION'):
-                    start_section_id = loader.construct_object(value_node)
+                elif (key == u'DEFAULT_ROOT_SECTION'):
+                    default_root_section = \
+                        self._constructDialogueSection(loader, value_node)
+                elif (key == u'ROOT_SECTIONS'):
+                    for root_section_node in value_node.value:
+                        root_section = self._constructRootDialogueSection(
+                                loader,
+                                root_section_node
+                        )
+                        root_sections.append(
+                            root_section
+                        )
                 elif (key == u'SECTIONS'):
                     for section_node in value_node.value:
                         dialogue_section = self._constructDialogueSection(
@@ -335,12 +379,52 @@ class YamlDialogueParser(AbstractDialogueParser):
             raise DialogueFormatError(e)
         
         dialogue = Dialogue(npc_name=npc_name, avatar_path=avatar_path,
-                            start_section_id=start_section_id,
+                            default_root_section=default_root_section,
+                            root_sections=root_sections,
                             sections=sections)
         return dialogue
     
-    def _constructDialogueSection(self, loader, section_node):
+    def _constructRootDialogueSection(self, loader, root_section_node):
         id = None
+        text = None
+        condition = None
+        responses = []
+        actions = []
+        root_section = None
+        
+        try:
+            for key_node, value_node in root_section_node.value:
+                key = key_node.value
+                if (key == u'ID'):
+                    id = loader.construct_object(value_node)
+                elif (key == u'SAY'):
+                    text = loader.construct_object(value_node)
+                elif (key == u'CONDITION'):
+                    condition = loader.construct_object(value_node)
+                elif (key == u'RESPONSES'):
+                    for response_node in value_node.value:
+                        dialogue_response = self._constructDialogueResponse(
+                            loader,
+                            response_node
+                        )
+                        responses.append(dialogue_response)
+                elif (key == u'ACTIONS'):
+                    for action_node in value_node.value:
+                        action = self._constructDialogueAction(loader,
+                                                             action_node)
+                        actions.append(action)
+        except (AttributeError, TypeError, ValueError) as e:
+            raise DialogueFormatError(e)
+        else:
+            root_section = DialogueSection(id=id, text=text,
+                                           condition=condition,
+                                           responses=responses,
+                                           actions=actions)
+        
+        return root_section
+    
+    def _constructDialogueSection(self, loader, section_node):
+        id_ = None
         text = None
         responses = []
         actions = []
@@ -350,7 +434,7 @@ class YamlDialogueParser(AbstractDialogueParser):
             for key_node, value_node in section_node.value:
                 key = key_node.value
                 if (key == u'ID'):
-                    id = loader.construct_object(value_node)
+                    id_ = loader.construct_object(value_node)
                 elif (key == u'SAY'):
                     text = loader.construct_object(value_node)
                 elif (key == u'RESPONSES'):
@@ -368,7 +452,7 @@ class YamlDialogueParser(AbstractDialogueParser):
         except (AttributeError, TypeError, ValueError) as e:
             raise DialogueFormatError(e)
         else:
-            dialogue_section = DialogueSection(id=id, text=text,
+            dialogue_section = DialogueSection(id_=id_, text=text,
                                                responses=responses,
                                                actions=actions)
         

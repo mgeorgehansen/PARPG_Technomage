@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Dig
 AVATAR_PATH: gui/portraits/bouncer.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "What do you want?  Can't you see I'm drinking here?"
     ACTIONS:
     -   meet:
@@ -66,6 +65,7 @@ SECTIONS:
     -   REPLY: "Hey, back off.  Just making small talk."
         GOTO: parting_shot
         
+SECTIONS:
 -   ID: explain_camilla
     SAY: "Well, it's probably because she gets hit on by greasy layabouts all\
        \ hours of the day.  Maybe you should cut her some slack."

@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Friendly NPC
 AVATAR_PATH: gui/portraits/npc.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Things are tough around here, let me tell you our problems"
     RESPONSES:
     -   REPLY: "Sure, tell me all about it"
@@ -28,6 +27,7 @@ SECTIONS:
     -   REPLY: "That sounds boring. Bye."
         GOTO: end
         
+SECTIONS:
 -   ID: listen_more
     SAY: "Raiders stole our cattle, our well was poisoned, and the beer is all\
        \ gone!"

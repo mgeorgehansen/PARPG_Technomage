@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Helja
 AVATAR_PATH: gui/portraits/quartermaster.jpg
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Hello, there!  A new addition to the labor pool, I see."
     ACTIONS:
     -   meet:
@@ -51,6 +50,7 @@ SECTIONS:
     -   REPLY: "Labor pool?  I forgot my suit."
         GOTO: end
         
+SECTIONS:
 -   ID: expound_quartermaster
     SAY: "I am the like the supply sergeant.  I am in charge of all the\
        \ communal goods - particularly food."

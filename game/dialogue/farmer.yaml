@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Farmer Manslow
 AVATAR_PATH: gui/portraits/farmer.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Who the hell are you??"
     ACTIONS:
     -   meet:
@@ -63,6 +62,7 @@ SECTIONS:
     -   REPLY: "Hey, relax there old timer!"
         GOTO: leave
         
+SECTIONS:
 -   ID: convince_farmer
     SAY: "Never touch the stuff."
     RESPONSES:

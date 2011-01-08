@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Camilla Niitty
 AVATAR_PATH: gui/portraits/camilla.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Oh, another vagabond.  What do you want?"
     ACTIONS:
     -   meet:
@@ -55,6 +54,7 @@ SECTIONS:
     -   REPLY: "You are as cold as... well, everything."
         GOTO: end
         
+SECTIONS:
 -   ID: buy_drink
     SAY: "I'm off duty right now.  Go talk to Jacob."
     RESPONSES:

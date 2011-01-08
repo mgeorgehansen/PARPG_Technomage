@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Kimmo Niitty
 AVATAR_PATH: gui/portraits/leader.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "What do you want?"
     ACTIONS:
     -   meet:
@@ -65,6 +64,7 @@ SECTIONS:
     -   REPLY: "See you later."
         GOTO: end
         
+SECTIONS:
 -   ID: help_alcohol
     SAY: "Well, if you've got enough to pay him, Jacob can set you up, over at\
        \ the Inn."

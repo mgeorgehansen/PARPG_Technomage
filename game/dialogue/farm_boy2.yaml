@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Rasmus
 AVATAR_PATH: gui/portraits/farm_boy_temp.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Hi, I'm Rasmus.  What can I do for you?"
     RESPONSES:
     -   REPLY: "I'm looking for stuff to make beer with "
@@ -38,6 +37,7 @@ SECTIONS:
     -   REPLY: "Oh, I was looking for Sami."
         GOTO: end
         
+SECTIONS:
 -   ID: help_beer
     SAY: "Not my place to hand out any stuff.  I just work here.  Talk to\
        \ Manslow."

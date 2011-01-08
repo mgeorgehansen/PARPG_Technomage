@@ -26,27 +26,8 @@ from scripts.dialogueprocessor import DialogueProcessor
 #    violation of unit test isolation, but ultimately they are just simple
 #    data structures that don't require much testing of their own so I feel
 #    that it isn't a mistake to use them.
-from scripts.dialogue import Dialogue, DialogueSection, DialogueResponse
-
-
-class NotInDict(object):
-    """
-    Object to return when a key could not be found in a dictionary and
-    None is not usable (e.g. because None can appear as a value in the dict).
-    """
-    __slots__ = []
-    
-    def __init__(self):
-        raise TypeError('NotInDict cannot be instantiated.')
-
-
-class MockPlayerCharacter(object):
-    pass
-
-
-class MockQuestEngine(object):
-    pass
-
+from scripts.dialogue import (Dialogue, DialogueSection, DialogueResponse,
+    RootDialogueSection)
 
 class MockDialogueAction(object):
     keyword = 'mock_action'
@@ -71,8 +52,8 @@ class TestDialogueProcessor(unittest.TestCase):
         """
         object_dict = {}
         for key in state.keys():
-            actual_value = getattr(object_, key, NotInDict)
-            if (actual_value is not NotInDict):
+            if (hasattr(object_, key)):
+                actual_value = getattr(object_, key)
                 object_dict[key] = actual_value
         self.assertDictContainsSubset(state, object_dict)
     
@@ -81,40 +62,52 @@ class TestDialogueProcessor(unittest.TestCase):
         self.dialogue = Dialogue(
             npc_name='Mr. NPC',
             avatar_path='/some/path',
-            start_section_id='main_section',
-            sections=[
-                DialogueSection(
-                    id='main_section',
-                    text='This is the main dialogue section.',
-                    actions=[
-                        MockDialogueAction('foo'),
-                    ],
+            default_root_section=DialogueSection(
+                id_='root_section',
+                text='This is the root dialogue section.',
+                actions=[
+                    MockDialogueAction('foo'),
+                ],
+                responses=[
+                    DialogueResponse(
+                        text='A response.',
+                        next_section_id='another_section',
+                    ),
+                    DialogueResponse(
+                        text='A conditional response evaluated to True.',
+                        condition='True',
+                        actions=[
+                            MockDialogueAction('foo'),
+                        ],
+                        next_section_id='another_section',
+                    ),
+                    DialogueResponse(
+                        text='A conditional response evaluated to False.',
+                        condition='False',
+                        next_section_id='another_section',
+                    ),
+                    DialogueResponse(
+                        text='A response that ends the dialogue.',
+                        next_section_id='end',
+                    ),
+                ],
+            ),
+            root_sections=[
+                RootDialogueSection(
+                    id_='alternative_root_section',
+                    condition='use_alternative_root is True',
+                    text='This is an alternate root section.',
                     responses=[
                         DialogueResponse(
-                            text='A response.',
-                            next_section_id='another_section',
-                        ),
-                        DialogueResponse(
-                            text='A conditional response evaluated to True.',
-                            condition='True',
-                            actions=[
-                                MockDialogueAction('foo'),
-                            ],
-                            next_section_id='another_section',
-                        ),
-                        DialogueResponse(
-                            text='A conditional response evaluated to False.',
-                            condition='False',
-                            next_section_id='another_section',
-                        ),
-                        DialogueResponse(
-                            text='A response that ends the dialogue.',
+                            text='End dialogue.',
                             next_section_id='end',
                         ),
                     ],
                 ),
+            ],
+            sections=[
                 DialogueSection(
-                    id='another_section',
+                    id_='another_section',
                     text='This is another dialogue section.',
                     responses=[
                         DialogueResponse(
@@ -125,22 +118,23 @@ class TestDialogueProcessor(unittest.TestCase):
                 ),
             ]
         )
-        self.game_state = {'pc': MockPlayerCharacter(),
-                           'quest': MockQuestEngine()}
-        self.dialogue_processor = DialogueProcessor(self.dialogue,
-                                                    self.game_state)
+        self.game_state = {'use_alternative_root': False}
 
 
 class TestInitiateDialogue(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.initiateDialogue} method."""
+    def setUp(self):
+        TestDialogueProcessor.setUp(self)
+        self.dialogue_processor = DialogueProcessor(self.dialogue,
+                                                    self.game_state)
+    
     def testInitiateDialogue_setsState(self):
         """Test initiateDialogue correctly sets DialogueProcessor state"""
         dialogue_processor = self.dialogue_processor
         dialogue_processor.initiateDialogue()
         
-        # Root dialogue section should have been pushed onto the stack.
-        root_dialogue_section = \
-            self.dialogue.sections[self.dialogue.start_section_id]
+        # Default root dialogue section should have been pushed onto the stack.
+        root_dialogue_section = self.dialogue.default_root_section
         self.assertStateEqual(dialogue_processor, in_dialogue=True,
                               dialogue=self.dialogue,
                               dialogue_section_stack=[root_dialogue_section])
@@ -148,6 +142,11 @@ class TestInitiateDialogue(TestDialogueProcessor):
 
 class TestEndDialogue(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.endDialogue} method."""
+    def setUp(self):
+        TestDialogueProcessor.setUp(self)
+        self.dialogue_processor = DialogueProcessor(self.dialogue,
+                                                    self.game_state)
+    
     def testEndDialogue_resetsState(self):
         """Test endDialogue correctly resets DialogueProcessor state"""
         dialogue_processor = self.dialogue_processor
@@ -172,8 +171,11 @@ class TestContinueDialogue(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.continueDialogue} method."""
     def setUp(self):
         TestDialogueProcessor.setUp(self)
+        self.dialogue_processor = DialogueProcessor(self.dialogue,
+                                                    self.game_state)
         self.dialogue_processor.initiateDialogue()
-        self.dialogue_action = self.dialogue.getRootSection().actions[0]
+        self.dialogue_action = \
+            self.dialogue.default_root_section.actions[0]
     
     def testRunsDialogueActions(self):
         """Test continueDialogue executes all DialogueActions"""
@@ -199,17 +201,38 @@ class TestContinueDialogue(TestDialogueProcessor):
         responses = dialogue_processor.continueDialogue()
         self.assertItemsEqual(responses, valid_responses)
 
+
+class TestGetRootDialogueSection(TestDialogueProcessor):
+    """Tests of the L{DialogueProcessor.getRootDialogueSection} method."""
+    def setUp(self):
+        TestDialogueProcessor.setUp(self)
+        self.dialogue_processor = DialogueProcessor(
+            self.dialogue,
+            {'use_alternative_root': True}
+        )
+        self.dialogue_processor.initiateDialogue()
+    
+    def testReturnsCorrectDialogueSection(self):
+        """getRootDialogueSection returns first section with true condition"""
+        dialogue_processor = self.dialogue_processor
+        dialogue = self.dialogue
+        root_dialogue_section = dialogue_processor.getRootDialogueSection()
+        expected_dialogue_section = dialogue.root_sections[0]
+        self.assertEqual(root_dialogue_section, expected_dialogue_section)
+
+
 class TestGetCurrentDialogueSection(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.getCurrentDialogueSection} method."""
     def setUp(self):
         TestDialogueProcessor.setUp(self)
+        self.dialogue_processor = DialogueProcessor(self.dialogue,
+                                                    self.game_state)
         self.dialogue_processor.initiateDialogue()
     
     def testReturnsCorrectDialogueSection(self):
         """Test getCurrentDialogueSection returns section at top of stack"""
         dialogue_processor = self.dialogue_processor
-        expected_dialogue_section = \
-            self.dialogue.sections[self.dialogue.start_section_id]
+        expected_dialogue_section = self.dialogue.default_root_section
         actual_dialogue_section = \
             dialogue_processor.getCurrentDialogueSection()
         self.assertEqual(expected_dialogue_section, actual_dialogue_section)
@@ -219,9 +242,11 @@ class TestRunDialogueActions(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.runDialogueActions} method."""
     def setUp(self):
         TestDialogueProcessor.setUp(self)
+        self.dialogue_processor = DialogueProcessor(self.dialogue,
+                                                    self.game_state)
         self.dialogue_processor.initiateDialogue()
         self.dialogue_section = DialogueSection(
-            id='some_section',
+            id_='some_section',
             text='Test dialogue section.',
             actions=[
                 MockDialogueAction('foo'),
@@ -257,6 +282,8 @@ class TestGetValidResponses(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.getValidResponses} method."""
     def setUp(self):
         TestDialogueProcessor.setUp(self)
+        self.dialogue_processor = DialogueProcessor(self.dialogue,
+                                                    self.game_state)
         self.dialogue_processor.initiateDialogue()
     
     def testReturnsValidResponses(self):
@@ -269,7 +296,7 @@ class TestGetValidResponses(TestDialogueProcessor):
         # evaluates to True.
         for response in valid_responses:
             if (response.condition is not None):
-                result = eval(response.condition, self.game_state, {})
+                result = eval(response.condition, {}, {})
                 self.assertTrue(result)
         responses = dialogue_processor.continueDialogue()
         self.assertItemsEqual(responses, valid_responses)
@@ -279,8 +306,11 @@ class TestReply(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.reply} method."""
     def setUp(self):
         TestDialogueProcessor.setUp(self)
-        self.response = self.dialogue.getRootSection().responses[1]
-        self.ending_response = self.dialogue.getRootSection().responses[3]
+        self.dialogue_processor = DialogueProcessor(self.dialogue,
+                                                    self.game_state)
+        self.response = self.dialogue.default_root_section.responses[1]
+        self.ending_response = \
+            self.dialogue.default_root_section.responses[3]
     
     def testRaisesExceptionWhenNotInitiated(self):
         """Test reply raises exception when called before initiateDialogue"""
@@ -291,7 +321,7 @@ class TestReply(TestDialogueProcessor):
             dialogue_processor.reply(self.response)
     
     def testExecutesDialogueActions(self):
-        """Test reply correctly executes DialogueActions in DialogueResponse"""
+        """reply correctly executes DialogueActions in a DialogueResponse"""
         dialogue_processor = self.dialogue_processor
         dialogue_processor.initiateDialogue()
         dialogue_processor.reply(self.response)
@@ -302,7 +332,7 @@ class TestReply(TestDialogueProcessor):
                               dialogue_action.call_arguments)
     
     def testJumpsToCorrectSection(self):
-        """Test reply pushes section specified by response onto stack"""
+        """reply pushes section specified by response onto stack"""
         dialogue_processor = self.dialogue_processor
         dialogue_processor.initiateDialogue()
         # Sanity check: Test response's next_section_id attribute must be refer
@@ -310,7 +340,7 @@ class TestReply(TestDialogueProcessor):
         self.assertIn(self.response.next_section_id,
                       self.dialogue.sections.keys())
         dialogue_processor.reply(self.response)
-        root_section = self.dialogue.getRootSection()
+        root_section = self.dialogue.default_root_section
         next_section = self.dialogue.sections[self.response.next_section_id]
         self.assertStateEqual(
             dialogue_processor,

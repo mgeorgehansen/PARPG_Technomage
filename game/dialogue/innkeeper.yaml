@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Jacob
 AVATAR_PATH: gui/portraits/innkeeper.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Hi there, Stranger!  Welcome to Jacob's.  How can I help you?"
     ACTIONS:
     -   meet:
@@ -49,6 +48,7 @@ SECTIONS:
     -   REPLY: "Nothing for me, thanks."
         GOTO: end
         
+SECTIONS:
 -   ID: buy_drink
     SAY: "Doesn't look like you got much to trade for any of my premium booze.\
        \ Come back later when you can pay."

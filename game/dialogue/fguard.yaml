@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Janie
 AVATAR_PATH: gui/portraits/fguard.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Halt, identify yourself!"
     RESPONSES:
     -   REPLY: "Whoa, easy with that weapon, sister"
@@ -36,6 +35,7 @@ SECTIONS:
            \ now."
         GOTO: end
         
+SECTIONS:
 -   ID: first_impression
     SAY: "Hey Stranger.  You're new around here, I don't recognize your\
        \ face..."

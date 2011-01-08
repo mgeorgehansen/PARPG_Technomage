@@ -15,9 +15,8 @@
 ---
 NPC_NAME: Skwisgaar the Crazy Swede
 AVATAR_PATH: gui/portraits/crazy_swede.png
-START_SECTION: main_dialog
-SECTIONS:
--   ID: main_dialog
+DEFAULT_ROOT_SECTION:
+    ID: main_dialog
     SAY: "Chop!  Chop!  Chopity Chop-chop?"
     ACTIONS:
     -   meet:
@@ -32,6 +31,7 @@ SECTIONS:
     -   REPLY: "Sorry, I don't speak chop."
         GOTO: end
         
+SECTIONS:
 -   ID: a1
     SAY: "Ah, you speak the lingo!  How long have you been chopping the good\
        \ chop?"
