@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Kandi
 AVATAR_PATH: gui/portraits/grifter_temp.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hi there stranger.  Buy a gal a drink?"
     ACTIONS:

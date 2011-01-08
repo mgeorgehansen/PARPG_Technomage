@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Kimmo Niitty
 AVATAR_PATH: gui/portraits/leader.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "What do you want?"
     ACTIONS:

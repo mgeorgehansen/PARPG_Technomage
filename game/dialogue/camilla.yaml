@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Camilla Niitty
 AVATAR_PATH: gui/portraits/camilla.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Oh, another vagabond.  What do you want?"
     ACTIONS:

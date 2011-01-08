@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Synnove Niitty
 AVATAR_PATH: gui/portraits/synnove.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hi there!  I don't recognize you.  Are you new here?"
     RESPONSES:

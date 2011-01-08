@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Dig
 AVATAR_PATH: gui/portraits/bouncer.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "What do you want?  Can't you see I'm drinking here?"
     ACTIONS:

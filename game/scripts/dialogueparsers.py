@@ -44,7 +44,7 @@ import yaml
 
 from scripts import COPYRIGHT_HEADER
 from scripts.dialogue import (Dialogue, DialogueSection, DialogueResponse,
-    RootDialogueSection)
+    DialogueGreeting)
 from scripts.dialogueactions import DialogueAction
 
 def setup_logging():
@@ -191,20 +191,20 @@ class YamlDialogueParser(AbstractDialogueParser):
         dialogue_dict = OrderedDict()
         dialogue_dict['NPC_NAME'] = dialogue.npc_name
         dialogue_dict['AVATAR_PATH'] = dialogue.avatar_path
-        dialogue_dict['DEFAULT_ROOT_SECTION'] = \
+        dialogue_dict['DEFAULT_GREETING'] = \
             self._representDialogueSection(dumper,
-                                           dialogue.default_root_section)
+                                           dialogue.default_greeting)
         # NOTE Technomage 2010-11-16: Dialogue stores its sections in an
         #     OrderedDict, so a round-trip load, dump, and load will preserve
         #     the order of DialogueSections.
-        if (len(dialogue.root_sections) > 0):
-            root_sections_list_node = dumper.represent_list([])
-            root_sections_list = root_sections_list_node.value
-            for root_section in dialogue.root_sections:
-                root_section_node = \
-                    self._representRootDialogueSection(dumper, root_section)
-                root_sections_list.append(root_section_node)
-            dialogue_dict['ROOT_SECTIONS'] = root_sections_list_node
+        if (len(dialogue.greetings) > 0):
+            greetings_list_node = dumper.represent_list([])
+            greetings_list = greetings_list_node.value
+            for greeting in dialogue.greetings:
+                greeting_node = \
+                    self._representRootDialogueSection(dumper, greeting)
+                greetings_list.append(greeting_node)
+            dialogue_dict['GREETINGS'] = greetings_list_node
         if (len(dialogue.setions) > 0):
             sections_list_node = dumper.represent_list([])
             sections_list = sections_list_node.value
@@ -225,16 +225,16 @@ class YamlDialogueParser(AbstractDialogueParser):
             dialogue_node.value.append((key_node, value_node))
         return dialogue_node
     
-    def _representRootDialogueSection(self, dumper, root_section):
-        root_section_node = dumper.represent_dict({})
-        root_section_dict = OrderedDict()
-        root_section_dict['ID'] = root_section.id
-        root_section_dict['CONDITION'] = dumper.represent_scalar(
+    def _representRootDialogueSection(self, dumper, greeting):
+        greeting_node = dumper.represent_dict({})
+        greeting_dict = OrderedDict()
+        greeting_dict['ID'] = greeting.id
+        greeting_dict['CONDITION'] = dumper.represent_scalar(
             'tag:yaml.org,2002:str',
-            root_section.condition,
+            greeting.condition,
             style='"'
         )
-        for key, value in root_section_dict.items():
+        for key, value in greeting_dict.items():
             if (isinstance(key, yaml.Node)):
                 key_node = key
             else:
@@ -243,8 +243,8 @@ class YamlDialogueParser(AbstractDialogueParser):
                 value_node = value
             else:
                 value_node = dumper.represent_data(value)
-            root_section_node.value.append((key_node, value_node))
-        return root_section_node
+            greeting_node.value.append((key_node, value_node))
+        return greeting_node
     
     def _representDialogueSection(self, dumper, dialogue_section):
         section_node = dumper.represent_dict({})
@@ -345,8 +345,8 @@ class YamlDialogueParser(AbstractDialogueParser):
     def _constructDialogue(self, loader, yaml_node):
         npc_name = None
         avatar_path = None
-        default_root_section = None
-        root_sections = []
+        default_greeting = None
+        greetings = []
         sections = []
         
         try:
@@ -356,17 +356,17 @@ class YamlDialogueParser(AbstractDialogueParser):
                     npc_name = loader.construct_object(value_node)
                 elif (key == u'AVATAR_PATH'):
                     avatar_path = loader.construct_object(value_node)
-                elif (key == u'DEFAULT_ROOT_SECTION'):
-                    default_root_section = \
+                elif (key == u'DEFAULT_GREETING'):
+                    default_greeting = \
                         self._constructDialogueSection(loader, value_node)
-                elif (key == u'ROOT_SECTIONS'):
-                    for root_section_node in value_node.value:
-                        root_section = self._constructRootDialogueSection(
+                elif (key == u'GREETINGS'):
+                    for greeting_node in value_node.value:
+                        greeting = self._constructRootDialogueSection(
                                 loader,
-                                root_section_node
+                                greeting_node
                         )
-                        root_sections.append(
-                            root_section
+                        greetings.append(
+                            greeting
                         )
                 elif (key == u'SECTIONS'):
                     for section_node in value_node.value:
@@ -379,21 +379,21 @@ class YamlDialogueParser(AbstractDialogueParser):
             raise DialogueFormatError(e)
         
         dialogue = Dialogue(npc_name=npc_name, avatar_path=avatar_path,
-                            default_root_section=default_root_section,
-                            root_sections=root_sections,
+                            default_greeting=default_greeting,
+                            greetings=greetings,
                             sections=sections)
         return dialogue
     
-    def _constructRootDialogueSection(self, loader, root_section_node):
+    def _constructRootDialogueSection(self, loader, greeting_node):
         id = None
         text = None
         condition = None
         responses = []
         actions = []
-        root_section = None
+        greeting = None
         
         try:
-            for key_node, value_node in root_section_node.value:
+            for key_node, value_node in greeting_node.value:
                 key = key_node.value
                 if (key == u'ID'):
                     id = loader.construct_object(value_node)
@@ -416,12 +416,12 @@ class YamlDialogueParser(AbstractDialogueParser):
         except (AttributeError, TypeError, ValueError) as e:
             raise DialogueFormatError(e)
         else:
-            root_section = DialogueSection(id=id, text=text,
+            greeting = DialogueSection(id=id, text=text,
                                            condition=condition,
                                            responses=responses,
                                            actions=actions)
         
-        return root_section
+        return greeting
     
     def _constructDialogueSection(self, loader, section_node):
         id_ = None

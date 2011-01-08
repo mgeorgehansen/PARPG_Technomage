@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Sami
 AVATAR_PATH: gui/portraits/farm_boy_temp.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Hi, I'm Sami.  How can I help you?"
     RESPONSES:

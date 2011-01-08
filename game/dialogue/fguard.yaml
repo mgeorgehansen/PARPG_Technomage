@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Janie
 AVATAR_PATH: gui/portraits/fguard.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Halt, identify yourself!"
     RESPONSES:

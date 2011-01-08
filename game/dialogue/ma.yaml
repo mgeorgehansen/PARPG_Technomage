@@ -15,7 +15,7 @@
 ---
 NPC_NAME: Ma Niitty
 AVATAR_PATH: gui/portraits/ma.png
-DEFAULT_ROOT_SECTION:
+DEFAULT_GREETING:
     ID: main_dialog
     SAY: "Why hello there... I don't recognize your face..."
     ACTIONS:
