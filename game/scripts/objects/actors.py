@@ -124,8 +124,14 @@ class NPCBehaviour(ActorBehaviour):
         self.target_loc = None
         self.nextAction = None
         
-        # hard code this for now
+        # hard code these for now
         self.distRange = (2, 4)
+        # these are parameters to lower the rate of wandering
+        # wander rate is the number of "IDLEs" before a wander step
+        # this could be set for individual NPCs at load time
+        # or thrown out altogether.
+        self.wanderCounter = 0
+        self.wanderRate = 9
         
     def getTargetLocation(self):
         """@rtype: fife.Location
@@ -171,8 +177,14 @@ class NPCBehaviour(ActorBehaviour):
             self.state = _AGENT_STATE_IDLE
             self.agent.act('stand', self.agent.getFacingLocation())
         elif self.state == _AGENT_STATE_IDLE:
+            if self.wanderCounter > self.wanderRate:
+                self.wanderCounter = 0
+                self.state = _AGENT_STATE_WANDER
+            else:
+                self.wanderCounter += 1
+                self.state = _AGENT_STATE_NONE
+            
             self.target_loc = self.getTargetLocation()
-            self.state = _AGENT_STATE_WANDER
             self.agent.act('stand', self.agent.getFacingLocation())
         elif self.state == _AGENT_STATE_WANDER:
             self.parent.wander(self.target_loc)
