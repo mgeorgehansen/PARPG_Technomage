@@ -1,0 +1,41 @@
+I thought readme-like document is needed not to be lost here.
+
+0. What it is and what it is not.
+1. Why I did it the way it is done?
+2. Concepts
+3. How are the files supposed to be used.
+
+0.
+This are textures to be utilized whan making scalable notebook GUI. It will not look optimally here and there, but it should be easy to correct it after "gluing it up" code-wise.
+1. 
+I had to figure out pretty, organic-looking notebook, scalable. Making it the normal way (as eg. webpages are done) will result in lethal dose of lame-look that will maybe look "good enough", but not "really good". Also this is why I used different sizes of textures here and there - to break the rhythm
+
+2.
+I planned to use two layers of graphics. One for paper, the other, above that, for borders.
+Bottom layer is 15 pix smaller than top layer from each side. I needed the transparency for sticking pieces of paper into it.
+Top layer has two sublayers in fact: Frame around the notebook and page fold upon it.
+3.
+Bottom layer layout:
+top-left_paper_texture.png --- paper_texture.png*(n-2) --- top-right_paper_texture.png
+paper_texture.png (m * n)
+bottom-left_paper_texture.png --- paper_texture.png*(n-2) --- bottom-right_paper_texture.png
+Note that corner textures have corners removed. Paper texture is tileable in both directions
+
+Top layer layout is pretty much similar:
+top-left_corner.png --- top_border.png --- top-right_corner.png
+left_border.png ||| ||| right_border.png
+bottom-left_corner.png --- bottom_border.png --- bottom-right_corner.png
+
+Borders are tileable in one direction only
+
+Above that there is a page fold, consisting of:
+
+top_middle.png
+middle_texture.png
+bottom_middle.png
+
+middle_texture.png is tileable vertically. However, due to organic look it has somewhat strange dimensions. The top and bottom pieces should be, however, placed one upon another, without too much fiddling.
+
+I have also added some stains that can be placed here and there to make overall look more romantic (or reumatic maybe)
+
+Sorry for how bizarre above things seems to be. Its all for the notebook to look as good as possible. If anyone has any better idea how to slice it, just do it, I won't be complaining too much.
