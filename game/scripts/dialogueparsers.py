@@ -14,6 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
+from scripts.common.pythonserializable import PythonSerializable
 """
 Contains classes for parsing and validating L{Dialogues<Dialogue>} and other
 dialogue-related data.
@@ -41,6 +42,10 @@ import re
 import textwrap
 
 import yaml
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 from scripts import COPYRIGHT_HEADER
 from scripts.dialogue import (Dialogue, DialogueSection, DialogueResponse,
@@ -101,12 +106,89 @@ class AbstractDialogueParser(object):
                                   'override the validate method.')
 
 
+class PythonDialogueParser(AbstractDialogueParser):
+    logger = logging.getLogger('dialogueparser.PythonDialogueParser')
+    
+    def load(self, stream):
+        python_document = stream.read()
+        all_classes = {'Dialogue': Dialogue,
+                       'DialogueSection': DialogueSection,
+                       'DialogueGreeting': DialogueGreeting,
+                       'DialogueResponse': DialogueResponse}
+        all_classes.update(DialogueAction.registered_actions)
+        dialogue = eval(python_document, all_classes, {})
+        return dialogue
+    
+    def dump(self, dialogue, stream):
+        serialization = self._representObject(dialogue)
+        stream.write(serialization)
+    
+    def _representObject(self, object_, indent_level=1):
+        if (hasattr(object_, '_init_args')):
+            serialization = self._representSerializable(object_, indent_level)
+        elif (isinstance(object_, Sequence) and not
+              isinstance(object_, basestring)):
+            serialization = self._representList(object_, indent_level)
+        else:
+            serialization = repr(object_)
+        return serialization
+    
+    def _representList(self, list_, indent_level=1):
+        indent = '    ' * indent_level
+        if (len(list_) > 0):
+            lines = []
+            for item in list_:
+                item_serialization = self._representObject(item,
+                                                           indent_level + 1)
+                line = '{indent}{value}'.format(value=item_serialization,
+                                                indent=indent)
+                lines.append(line)
+            list_serialization = '\n'.join(
+                [
+                    '[',
+                    ',\n'.join(lines),
+                    '{indent}]'.format(indent='    ' * (indent_level - 1))
+                ]
+            )
+        else:
+            list_serialization = '[]'
+        
+        return list_serialization
+    
+    def _representSerializable(self, object_, indent_level=1):
+        indent = '    ' * indent_level
+        parameter_lines = []
+        args, kwargs = object_._get_state()
+        for value in args:
+            value_serialization = \
+                self._representObject(value, indent_level + 1)
+            line = '{indent}{value}'.format(value=value_serialization,
+                                            indent=indent)
+            parameter_lines.append(line)
+        for key, value in kwargs.items():
+            value_serialization = \
+                self._representObject(value, indent_level + 1)
+            line = \
+                '{indent}{key}={value}'.format(key=key,
+                                               value=value_serialization,
+                                               indent=indent)
+            parameter_lines.append(line)
+        lines = [
+            '{class_name}('.format(class_name=type(object_).__name__),
+            ',\n'.join(parameter_lines),
+            '{indent})'.format(indent='    ' * (indent_level - 1))
+        ]
+        serialization = '\n'.join(lines)
+
+        return serialization
+
+
 class YamlDialogueParser(AbstractDialogueParser):
     """
     L{AbstractDialogueParser} subclass responsible for parsing dialogues
     serialized in YAML.
     """
-    logger = logging.getLogger('dialogueparser.OldYamlDialogueParser')
+    logger = logging.getLogger('dialogueparser.YamlDialogueParser')
     
     def load(self, stream, loader_class=yaml.Loader):
         """

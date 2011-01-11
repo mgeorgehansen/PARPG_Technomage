@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """Convert YAML dialogue files from the Techdemo1 format to the new Techdemo2
 format.
-
-@author: M. George Hansen <technopolitica@gmail.com>
 """
 import os.path
 import sys
@@ -12,7 +10,7 @@ import shutil
 import logging
 
 from scripts.common.optionparser import OptionParser
-from scripts.dialogueparser import (OldYamlDialogueParser, YamlDialogueParser,
+from scripts.dialogueparsers import (YamlDialogueParser, PythonDialogueParser,
     DialogueFormatError)
 
 def backup_file(filepath):
@@ -24,13 +22,13 @@ def backup_file(filepath):
 
 def convert_dialogue_file(filepath, backup):
     logging.info('processing {0}...'.format(filepath))
-    dummy, extension = os.path.splitext(filepath)
+    filename, extension = os.path.splitext(filepath)
     if (not extension == '.yaml'):
         logging.info('    skipping {0}: not a yaml file'.format(filepath))
         return 1
     with file(filepath, 'r') as dialogue_file:
-        old_parser = OldYamlDialogueParser()
-        new_parser = YamlDialogueParser()
+        old_parser = YamlDialogueParser()
+        new_parser = PythonDialogueParser()
         try:
             dialogue = old_parser.load(dialogue_file)
         except DialogueFormatError as error:
@@ -39,10 +37,8 @@ def convert_dialogue_file(filepath, backup):
                 .format(filepath)
             )
             return 1
-    if (backup):
-        backup_file(filepath)
-    logging.info('    backed up {0} as {0}.backup'.format(filepath))
-    with file(filepath, 'w') as dialogue_file:
+    new_filepath = filename + '.py'
+    with file(new_filepath, 'w') as dialogue_file:
         new_parser.dump(dialogue, dialogue_file)
     logging.info('    successfully converted {0}!'.format(filepath))
 

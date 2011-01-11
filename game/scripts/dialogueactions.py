@@ -20,6 +20,8 @@ external effects on the game state.
 """
 import logging
 
+from scripts.common.pythonserializable import PythonSerializable
+
 def setupLogging():
     """Set various logging parameters for this module."""
     module_logger = logging.getLogger('dialogueaction')
@@ -27,7 +29,7 @@ def setupLogging():
         module_logger.setLevel(logging.DEBUG)
 setupLogging()
 
-class DialogueAction(object):
+class DialogueAction(PythonSerializable):
     """
     Abstract base class for subclasses that represent dialogue actions embedded
     within a DialogueSection or DialogueResponse.
@@ -50,7 +52,7 @@ class DialogueAction(object):
         @param dialogue_action_type: dialogue action to register.
         @type dialogue_action_type: L{DialogueAction} subclass
         """
-        cls.registered_actions[dialogue_action_type.keyword] = \
+        cls.registered_actions[dialogue_action_type.__name__] = \
             dialogue_action_type
     
     def __init__(self, *args, **kwargs):
@@ -67,6 +69,7 @@ class DialogueAction(object):
         if (not hasattr(type(self), 'keyword')):
             raise AttributeError('DialogueAction subclasses must define the '
                                  'keyword class variable.')
+        PythonSerializable.__init__(self, *args, **kwargs)
         self.arguments = (args, kwargs)
     
     def __call__(self, game_state):

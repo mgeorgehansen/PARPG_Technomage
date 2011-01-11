@@ -24,7 +24,9 @@ except ImportError:
     # Python version 2.4-2.6 doesn't have the OrderedDict
     from scripts.common.ordereddict import OrderedDict
 
-class Dialogue(object):
+from scripts.common.pythonserializable import PythonSerializable
+
+class Dialogue(PythonSerializable):
     """
     Represents a complete dialogue and acts as a container for the dialogue
     data belonging to a particular NPC.
@@ -55,6 +57,9 @@ class Dialogue(object):
             L{Dialogue} instance.
         @type sections: list of L{DialogueSections<DialogueSection>}
         """
+        PythonSerializable.__init__(self, npc_name, avatar_path,
+                                    default_greeting, greetings=greetings,
+                                    sections=sections)
         self.npc_name = npc_name
         self.avatar_path = avatar_path
         self.default_greeting = default_greeting
@@ -75,7 +80,7 @@ class Dialogue(object):
             self.sections[section.id] = section
     
     def __str__(self):
-        """Return the string representation of a L{Dialogue} instance."""
+        """Return the string representation of the L{Dialogue} instance."""
         string_representation = 'Dialogue(npc_id={0.npc_name})'.format(self)
         return string_representation
 
@@ -98,7 +103,7 @@ class DialogueNode(object):
         self.actions = actions or []
 
 
-class DialogueSection(DialogueNode):
+class DialogueSection(DialogueNode, PythonSerializable):
     """DialogueNode that represents a distinct section of the dialogue."""
     __slots__ = ['id', 'text', 'responses', 'actions']
     
@@ -117,14 +122,15 @@ class DialogueSection(DialogueNode):
             L{DialogueSection} is reached.
         @type actions: list of L{DialogueActions<DialogueAction>}
         """
-        print(id_, text, responses, actions)
         DialogueNode.__init__(self, text=text, actions=actions)
+        PythonSerializable.__init__(self, id_, text, responses=responses,
+                                    actions=actions)
         self.id = id_
         if (responses is not None):
             self.responses = list(responses)
 
 
-class DialogueGreeting(DialogueSection):
+class DialogueGreeting(DialogueNode, PythonSerializable):
     """
     Represents a root section of dialogue in a L{Dialogue} along with the
     conditional statement used to determine the whether this section should be
@@ -137,7 +143,7 @@ class DialogueGreeting(DialogueSection):
         L{DialogueSection} referenced is a valid starting section.
     @type condition: basestring
     """
-    __slots__ = ['id', 'condition', 'text', 'actions', 'responses']
+    __slots__ = ['id', 'text',  'condition', 'actions', 'responses']
     
     def __init__(self, id_, condition, text, responses=None, actions=None):
         """
@@ -157,17 +163,20 @@ class DialogueGreeting(DialogueSection):
             L{DialogueSection} is reached.
         @type actions: list of L{DialogueActions<DialogueAction>}
         """
-        DialogueSection.__init__(self, id_=id_, text=text, responses=responses,
-                                 actions=actions)
+        DialogueNode.__init__(self, text=text, actions=actions)
+        PythonSerializable.__init__(self, id_, text, condition=condition,
+                                    responses=responses, actions=actions)
+        self.id = id_
         self.condition = condition
+        self.responses = responses
 
 
-class DialogueResponse(DialogueNode):
+class DialogueResponse(DialogueNode, PythonSerializable):
     """
     L{DialogueNode} that represents one possible player response to a
     particular L{DialogueSection}.
     """
-    __slots__ = ['text', 'actions', 'condition', 'next_section_id']
+    __slots__ = ['text', 'condition', 'actions', 'next_section_id']
     
     def __init__(self, text, next_section_id, actions=None, condition=None):
         """
@@ -187,5 +196,7 @@ class DialogueResponse(DialogueNode):
         @type condition: basestring
         """
         DialogueNode.__init__(self, text=text, actions=actions)
+        PythonSerializable.__init__(self, text, next_section_id,
+                                    condition=condition, actions=actions)
         self.condition = condition
         self.next_section_id = next_section_id

@@ -22,7 +22,7 @@ import os
 import sys
 
 from scripts.common.optionparser import OptionParser, OptionError
-from scripts.dialogueparsers import YamlDialogueParser
+from scripts.dialogueparsers import PythonDialogueParser
 from scripts.dialogueprocessor import DialogueProcessor
 from scripts.quest_engine import QuestEngine
 
@@ -104,7 +104,7 @@ def selectDialogueFile():
     to select one for testing.
     """
     dialogue_files = [file_name for file_name in os.listdir(DIALOGUE_DIR) 
-                      if file_name.endswith('.yaml')]
+                      if file_name.endswith('.py')]
     for index, file_name in enumerate(dialogue_files):
         print('{0} - {1}'.format(index, file_name))
     while True:
@@ -188,7 +188,7 @@ def main(argv=sys.argv):
         'box': MockBox(),
         'beer': MockBeer()
     }
-    dialogue_parser = YamlDialogueParser()
+    dialogue_parser = PythonDialogueParser()
     with file(dialogue_file_path, 'r') as dialogue_file:
         dialogue = dialogue_parser.load(dialogue_file)
     processDialogue(dialogue, game_state)
