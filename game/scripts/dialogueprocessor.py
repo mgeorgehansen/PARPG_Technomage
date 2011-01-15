@@ -20,7 +20,10 @@ L{Dialogues<Dialogue>} with NPCs.
 """
 import logging
 
+from scripts.common.utils import dedent_chomp
+
 if (__debug__):
+    from collections import Sequence, MutableMapping
     from scripts.dialogue import Dialogue
 
 def setupLogging():
@@ -96,9 +99,6 @@ class DialogueProcessor(object):
                 '{0} does not implement Dialogue interface'.format(dialogue)
             self._dialogue = dialogue
         
-        def fdel(self):
-            self._dialogue = None
-        
         return locals()
     dialogue = property(**dialogue())
     
@@ -106,8 +106,12 @@ class DialogueProcessor(object):
         def fget(self):
             return self._dialogue_section_stack
         
-        def fdel(self):
-            self._dialogue_section_stack = []
+        def fset(self, new_value):
+            assert isinstance(new_value, Sequence) and not \
+                   isinstance(new_value, basestring), \
+                   'dialogue_section_stack must be a Sequence, not {0}'\
+                   .format(new_value)
+            self._dialogue_section_stack = new_value
         
         return locals()
     dialogue_section_stack = property(**dialogue_section_stack())
@@ -116,8 +120,11 @@ class DialogueProcessor(object):
         def fget(self):
             return self._game_state
         
-        def fdel(self):
-            self._game_state = {}
+        def fset(self, new_value):
+            assert isinstance(new_value, MutableMapping),\
+                   'game_state must be a MutableMapping, not {0}'\
+                   .format(new_value)
+            self._game_state = new_value
         
         return locals()
     game_state = property(**game_state())
@@ -148,7 +155,7 @@ class DialogueProcessor(object):
         self._game_state = game_state
         self._in_dialogue = False
     
-    def getRootDialogueSection(self):
+    def getDialogueGreeting(self):
         """
         Evaluate the L{RootDialogueSections<RootDialogueSection>} conditions
         and return the valid L{DialogueSection} which should be displayed
@@ -156,38 +163,42 @@ class DialogueProcessor(object):
         
         @return: Valid root dialogue section.
         @rtype: L{DialogueSection}
+        
+        @raise: RuntimeError - evaluation of a DialogueGreeting condition fails
+            by raising an exception (e.g. due to a syntax error).
         """
         dialogue = self.dialogue
-        root_dialogue_section = None
+        dialogue_greeting = None
         for greeting in dialogue.greetings:
-            if (eval(greeting.condition, self.game_state)):
-                root_dialogue_section = greeting
-        if (root_dialogue_section is None):
-            root_dialogue_section = dialogue.default_greeting
+            try:
+                condition_met = eval(greeting.condition, self.game_state)
+            except Exception as exception:
+                error_message = dedent_chomp('''
+                    exception raised in DialogueGreeting {id} condition:
+                    {exception}
+                ''').format(id=greeting.id, exception=exception)
+                self._logger.error(error_message)
+            if (condition_met):
+                dialogue_greeting = greeting
+        if (dialogue_greeting is None):
+            dialogue_greeting = dialogue.default_greeting
         
-        return root_dialogue_section
+        return dialogue_greeting
     
     def initiateDialogue(self):
         """
         Prepare the L{DialogueProcessor} to process the L{Dialogue} by pushing
         the starting L{DialogueSection} onto the L{dialogue_section_stack}.
         
-        @raise TypeError: Unable to determine the root L{DialogueSection}
+        @raise RuntimeError: Unable to determine the root L{DialogueSection}
             defined by the L{Dialogue}.
         """
         if (self.in_dialogue):
             self.endDialogue()
-        dialogue = self.dialogue
-        try:
-            root_dialogue_section = self.getRootDialogueSection()
-        except (RuntimeError,) as error:
-            self._logger.error(str(error))
-            raise TypeError(('unable to determine root DialogueSection for '
-                             '{0}').format(dialogue))
-        else:
-            self.dialogue_section_stack.append(root_dialogue_section)
-            self.in_dialogue = True
-            self._logger.info('initiated dialogue {0}'.format(dialogue))
+        dialogue_greeting = self.getDialogueGreeting()
+        self.dialogue_section_stack.append(dialogue_greeting)
+        self.in_dialogue = True
+        self._logger.info('initiated dialogue {0}'.format(self.dialogue))
     
     def continueDialogue(self):
         """
@@ -205,8 +216,10 @@ class DialogueProcessor(object):
         @precondition: dialogue has been initiated via L{initiateDialogue}.
         """
         if (not self.in_dialogue):
-            raise RuntimeError('dialogue has not be initiated via '
-                               'initiateDialogue yet')
+            error_message = dedent_chomp('''
+                dialogue has not be initiated via initiateDialogue yet
+            ''')
+            raise RuntimeError(error_message)
         current_dialogue_section = self.getCurrentDialogueSection()
         self.runDialogueActions(current_dialogue_section)
         valid_responses = self.getValidResponses(current_dialogue_section)
@@ -227,13 +240,19 @@ class DialogueProcessor(object):
             L{dialogue_section_stack} contains at least one L{DialogueSection}.
         """
         if (not self.in_dialogue):
-            raise RuntimeError('getCurrentDialogueSection called but the '
-                               'dialogue has not been initiated yet')
+            error_message = dedent_chomp('''
+                getCurrentDialogueSection called but the dialogue has not been
+                initiated yet
+            ''')
+            raise RuntimeError(error_message)
         try:
             current_dialogue_section = self.dialogue_section_stack[-1]
         except IndexError:
-            raise RuntimeError('getCurrentDialogueSection called but no '
-                               'DialogueSections are in the stack')
+            error_message = dedent_chomp('''
+                getCurrentDialogueSection called but no DialogueSections are in
+                the stack
+            ''')
+            raise RuntimeError(error_message)
         
         return current_dialogue_section
     
@@ -278,12 +297,13 @@ class DialogueProcessor(object):
             try:
                 condition_met = condition is None or \
                                 eval(condition, self.game_state)
-            except (Exception,) as error:
-                self._logger.error(
-                    ('evaluation of condition "{0}" for {1} failed with '
-                     'error: {2}').format(dialogue_response.condition,
-                                   dialogue_response, error)
-                )
+            except (Exception,) as exception:
+                error_message = dedent_chomp('''
+                    evaluation of condition {condition} for {response} failed
+                    with error: {exception}
+                ''').format(condition=dialogue_response.condition,
+                            response=dialogue_response, exception=exception)
+                self._logger.error(error_message)
             else:
                 self._logger.debug(
                     'condition "{0}" for {1} evaluated to {2}'
@@ -310,8 +330,11 @@ class DialogueProcessor(object):
             is used.
         """
         if (not self.in_dialogue):
-            raise RuntimeError('reply cannot be called until the dialogue has '
-                               'been initiated via initiateDialogue')
+            error_message = dedent_chomp('''
+                reply cannot be called until the dialogue has been initiated
+                via initiateDialogue
+            ''')
+            raise RuntimeError(error_message)
         self._logger.info('replied with {0}'.format(dialogue_response))
         # FIXME: Technomage 2010-12-11: What happens if runDialogueActions
         #     raises an error?
@@ -319,15 +342,20 @@ class DialogueProcessor(object):
         next_section_id = dialogue_response.next_section_id
         if (next_section_id == 'back'):
             if (len(self.dialogue_section_stack) == 1):
-                raise RuntimeError('attempted to run goto: back action but '
-                                   'stack does not contain a previous '
-                                   'DialogueSection')
+                error_message = dedent_chomp('''
+                    attempted to run goto: back action but stack does not
+                    contain a previous DialogueSection
+                ''')
+                raise RuntimeError(error_message)
             else:
                 try:
                     self.dialogue_section_stack.pop()
                 except (IndexError,):
-                    raise RuntimeError('attempted to run goto: back action '
-                                       'but the stack was empty')
+                    error_message = dedent_chomp('''
+                        attempted to run goto: back action but the stack was
+                        empty
+                    ''')
+                    raise RuntimeError(error_message)
                 else:
                     self._logger.debug(
                         'ran goto: back action, restored last DialogueSection'
@@ -340,10 +368,11 @@ class DialogueProcessor(object):
                 next_dialogue_section = \
                     self.dialogue.sections[next_section_id]
             except KeyError:
-                raise RuntimeError(
-                    ('"{0}" is not a recognized goto: action or '
-                     'DialogueSection identifier').format(next_section_id)
-                )
+                error_message = dedent_chomp('''
+                    {0} is not a recognized goto: action or DialogueSection
+                    identifier
+                ''').format(next_section_id)
+                raise RuntimeError(error_message)
             else:
                 self.dialogue_section_stack.append(next_dialogue_section)
     
@@ -352,5 +381,5 @@ class DialogueProcessor(object):
         End the current dialogue and clean up any resources in use by the
         L{DialogueProcessor}.
         """
-        del self.dialogue_section_stack
+        self.dialogue_section_stack = []
         self.in_dialogue = False

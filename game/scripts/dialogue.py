@@ -58,9 +58,13 @@ class Dialogue(object):
         self.npc_name = npc_name
         self.avatar_path = avatar_path
         self.default_greeting = default_greeting
-        self.greetings = greetings
+        self.greetings = greetings if greetings is not None else []
         self.sections = OrderedDict()
-        all_sections = sections + [default_greeting] + greetings
+        all_sections = [default_greeting]
+        if (greetings is not None):
+            all_sections += greetings
+        if (sections is not None):
+            all_sections += sections
         if (__debug__):
             section_ids = [section.id for section in all_sections]
         for section in all_sections:
