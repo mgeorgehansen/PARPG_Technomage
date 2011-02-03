@@ -113,6 +113,13 @@ class InventoryGUI(ContainerGUIBase):
         super(InventoryGUI, self).__init__(controller, "gui/inventory.xml")
         self.engine = controller.engine
         self.inventory_shown = False
+        render_backend = self.engine.getRenderBackend()
+        screen_mode = render_backend.getCurrentScreenMode()
+        screen_width, screen_height = (screen_mode.getWidth(),
+                                       screen_mode.getHeight())
+        widget_width, widget_height = self.gui.size
+        self.gui.position = ((screen_width - widget_width) / 2,
+                             (screen_height - widget_height) / 2)
     
     def toggleInventory(self, toggleImage=True):
         """Pause the game and enter the inventory screen, or close the
