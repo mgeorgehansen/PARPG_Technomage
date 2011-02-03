@@ -16,13 +16,129 @@
 #   along with PARPG.  If not, see <http://www.gnu.org/licenses/>.
 
 from fife.extensions.pychan.tools import callbackWithArguments as cbwa
+from fife.extensions import pychan
+from fife.extensions.pychan.attrs import UnicodeAttr
 
 from scripts.gui import drag_drop_data as data_drag
 from scripts.objects.base import Container
 from scripts.gui.containergui_base import ContainerGUIBase
 from scripts.objects.action import ACTIONS
 
+class EquipmentSlot(pychan.VBox):
+    ATTRIBUTES = pychan.VBox.ATTRIBUTES + [UnicodeAttr('label_text')]
+    
+    def _setLabelText(self, text):
+        label = self.findChild()
+        label.text = unicode(text)
+        label.resizeToContent()
+        self.margins = (
+            int((self.width - label.width) / 2.0),
+            int((self.height - label.height) / 2.0)
+        )
+    
+    def _getLabelText(self):
+        label = self.findChild()
+        return label.text
+    
+    label_text = property(fget=_getLabelText, fset=_setLabelText)
+    
+    def __init__(self, label_text=u'equipment', min_size=(50, 50),
+                 max_size=(50, 50), margins=None,
+                 background_image="gui/inv_images/inv_background.png",
+                 **kwargs):
+        pychan.VBox.__init__(self, min_size=min_size, max_size=max_size,
+                             **kwargs)
+        self.background_image = background_image
+        label = pychan.Label(text=unicode(label_text))
+        self.addChild(label)
+        self.label_text = label_text
+        self.adaptLayout()
+        if self.parent is not None:
+            self.beforeShow()
+
+
+class InventoryGrid(pychan.VBox):
+    ATTRIBUTES = pychan.VBox.ATTRIBUTES + [pychan.attrs.PointAttr('grid_size')]
+    
+    def _setNColumns(self, n_columns):
+        n_rows = self.grid_size[1]
+        self.grid_size = (n_columns, n_rows)
+    
+    def _getNColumns(self):
+        n_columns = self.grid_size[0]
+        return n_columns
+    n_columns = property(fget=_getNColumns, fset=_setNColumns)
+    
+    def _setNRows(self, n_rows):
+        n_columns = self.grid_size[0]
+        self.grid_size = (n_columns, n_rows)
+    
+    def _getNRows(self):
+        n_rows = self.grid_size[1]
+        return n_rows
+    n_rows = property(fget=_getNRows, fset=_getNColumns)
+    
+    def _setGridSize(self, grid_size):
+        n_columns, n_rows = grid_size
+        self.removeAllChildren()
+        for row_n in range(n_rows):
+            row_size = (n_columns * 50, 50)
+            row = pychan.HBox(min_size=row_size, max_size=row_size,
+                              padding=self.padding)
+            row.border_size = 1
+            row.opaque = 0
+            for column_n in range(n_columns):
+                slot = pychan.Icon(min_size=(50, 50), max_size=(50, 50))
+                slot.border_size = 1
+                row.addChild(slot)
+            self.addChild(row)
+        self.min_size = ((n_columns * 50) + 2, (n_rows * 50) + 2)
+        self.max_size = self.min_size
+    
+    def _getGridSize(self):
+        n_rows = len(self.children)
+        n_columns = len(self.children[0].children)
+        return (n_rows, n_columns)
+    grid_size = property(fget=_getGridSize, fset=_setGridSize)
+    
+    def __init__(self, grid_size=(2, 2), padding=0, **kwargs):
+        pychan.VBox.__init__(self, padding=padding, **kwargs)
+        self.opaque = 0
+        self.grid_size = grid_size
+        self.border_size = 1
+
+
 class InventoryGUI(ContainerGUIBase):
+    def __init__(self, controller, inventory, callbacks):
+        super(InventoryGUI, self).__init__(controller, "gui/inventory.xml")
+        self.engine = controller.engine
+        self.inventory_shown = False
+    
+    def toggleInventory(self, toggleImage=True):
+        """Pause the game and enter the inventory screen, or close the
+           inventory screen and resume the game.
+           @type toggleImage: bool
+           @param toggleImage:
+               Call toggleInventoryCallback if True. Toggling via a
+               keypress requires that we toggle the Hud inventory image
+               explicitly. Clicking on the Hud inventory button toggles the
+               image implicitly, so we don't change it.
+           @return: None"""
+        if not self.inventory_shown:
+            self.showInventory()
+            self.inventory_shown = True
+        else:
+            self.closeInventory()
+            self.inventory_shown = False
+    
+    def showInventory(self):
+        self.gui.show()
+    
+    def closeInventory(self):
+        self.gui.hide()
+
+
+class _InventoryGUI(ContainerGUIBase):
     """Inventory GUI class"""
     def __init__(self, controller, inventory, callbacks):
         """Initialise the instance.

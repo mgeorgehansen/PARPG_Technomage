@@ -148,19 +148,23 @@ class Hud(object):
 
     def initializeInventory(self):
         """Initialize the inventory"""
-        inv_callbacks = {
-            'refreshReadyImages': self.refreshReadyImages,
-            'toggleInventoryButton': self.toggleInventoryButton,
-        }
-        self.inventory_storage = \
-            self.model.game_state.player_character.inventory
-        if self.inventory == None:
+        if not self.inventory:
             self.inventory = inventorygui.InventoryGUI(self.controller,
-                                                       self.inventory_storage,
-                                                       inv_callbacks)
-        else:
-            self.inventory.inventory_storage = self.inventory_storage
-        self.refreshReadyImages()
+                                                       None,
+                                                       None)
+#        inv_callbacks = {
+#            'refreshReadyImages': self.refreshReadyImages,
+#            'toggleInventoryButton': self.toggleInventoryButton,
+#        }
+#        self.inventory_storage = \
+#            self.model.game_state.player_character.inventory
+#        if self.inventory == None:
+#            self.inventory = inventorygui.InventoryGUI(self.controller,
+#                                                       self.inventory_storage,
+#                                                       inv_callbacks)
+#        else:
+#            self.inventory.inventory_storage = self.inventory_storage
+#        self.refreshReadyImages()
     
     def initializeCharacterScreen(self):
         """Initialize the character screen."""
