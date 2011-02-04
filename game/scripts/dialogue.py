@@ -121,7 +121,6 @@ class DialogueSection(DialogueNode):
             L{DialogueSection} is reached.
         @type actions: list of L{DialogueActions<DialogueAction>}
         """
-        print(id_, text, responses, actions)
         DialogueNode.__init__(self, text=text, actions=actions)
         self.id = id_
         if (responses is not None):
