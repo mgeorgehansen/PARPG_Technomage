@@ -14,6 +14,7 @@
 # Miscellaneous game functions
 
 import os, sys, fnmatch
+from textwrap import dedent
 
 def addPaths (*paths):
     """Adds a list of paths to sys.path. Paths are expected to use forward
@@ -45,4 +46,17 @@ def loadSettings(settings_file = "./settings.xml"):
     from fife.extensions.fife_settings import Setting
     return Setting(app_name = "PARPG",
                    settings_file = settings_file, 
-                   settings_gui_xml = "")  
+                   settings_gui_xml = "")
+
+def dedent_chomp(string):
+    """Remove common leading whitespace and chomp each non-blank line."""
+    dedented_string = dedent(string).strip()
+    lines = []
+    for line in dedented_string.splitlines():
+        if not line or line.isspace():
+            line = '\n\n'
+        else:
+            line = ''.join([line, ' '])
+        lines.append(line)
+    result = ''.join(lines)
+    return result

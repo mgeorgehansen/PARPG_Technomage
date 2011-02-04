@@ -21,6 +21,7 @@ except:
     # Python 2.7
     import unittest
 
+from scripts.common.utils import dedent_chomp
 from scripts.dialogueprocessor import DialogueProcessor
 # NOTE Technomage 2010-12-08: Using the dialogue data structures might be a
 #    violation of unit test isolation, but ultimately they are just simple
@@ -125,20 +126,66 @@ class TestInitiateDialogue(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.initiateDialogue} method."""
     def setUp(self):
         TestDialogueProcessor.setUp(self)
-        self.dialogue_processor = DialogueProcessor(self.dialogue,
-                                                    self.game_state)
+        self.dialogue = Dialogue(
+            npc_name='Mr. NPC',
+            avatar_path='/some/path',
+            default_greeting=DialogueSection(
+                id_='greeting',
+                text='This is the one (and only) dialogue section.',
+                responses=[
+                    DialogueResponse(
+                        text=dedent_chomp('''
+                            A response that moves the dialogue to
+                            another_section.
+                        '''),
+                        next_section_id='another_section'
+                    ),
+                    DialogueResponse(
+                        text='A response that ends the dialogue.',
+                        next_section_id='end',
+                    ),
+                ],
+            ),
+            sections=[
+                DialogueSection(
+                    id_='another_section',
+                    text='This is another section.',
+                    responses=[
+                        DialogueResponse(
+                            text='A response that ends the dialogue',
+                            next_section_id='end',
+                        )
+                    ],
+                ),
+            ]
+        )
+        self.dialogue_processor = DialogueProcessor(self.dialogue, {})
     
-    def testInitiateDialogue_setsState(self):
-        """Test initiateDialogue correctly sets DialogueProcessor state"""
+    def testSetsState(self):
+        """initiateDialogue correctly sets DialogueProcessor state"""
         dialogue_processor = self.dialogue_processor
         dialogue_processor.initiateDialogue()
         
         # Default root dialogue section should have been pushed onto the stack.
-        root_dialogue_section = self.dialogue.default_greeting
+        default_greeting = self.dialogue.default_greeting
         self.assertStateEqual(dialogue_processor, in_dialogue=True,
                               dialogue=self.dialogue,
-                              dialogue_section_stack=[root_dialogue_section])
-
+                              dialogue_section_stack=[default_greeting])
+    
+    def testEndsExistingDialogue(self):
+        """initiateDialogue ends a previously initiated dialogue"""
+        dialogue_processor = self.dialogue_processor
+        dialogue_processor.initiateDialogue()
+        valid_responses = dialogue_processor.continueDialogue()
+        dialogue_processor.reply(valid_responses[0])
+        
+        # Sanity check.
+        assert dialogue_processor.in_dialogue
+        dialogue_processor.initiateDialogue()
+        default_greeting = self.dialogue.default_greeting
+        self.assertStateEqual(dialogue_processor, in_dialogue=True,
+                              dialogue=self.dialogue,
+                              dialogue_section_stack=[default_greeting])
 
 class TestEndDialogue(TestDialogueProcessor):
     """Tests of the L{DialogueProcessor.endDialogue} method."""
@@ -147,8 +194,8 @@ class TestEndDialogue(TestDialogueProcessor):
         self.dialogue_processor = DialogueProcessor(self.dialogue,
                                                     self.game_state)
     
-    def testEndDialogue_resetsState(self):
-        """Test endDialogue correctly resets DialogueProcessor state"""
+    def testResetsState(self):
+        """endDialogue correctly resets DialogueProcessor state"""
         dialogue_processor = self.dialogue_processor
         # Case: No dialogue initiated.
         assert not dialogue_processor.in_dialogue, \
@@ -178,7 +225,7 @@ class TestContinueDialogue(TestDialogueProcessor):
             self.dialogue.default_greeting.actions[0]
     
     def testRunsDialogueActions(self):
-        """Test continueDialogue executes all DialogueActions"""
+        """continueDialogue executes all DialogueActions"""
         dialogue_processor = self.dialogue_processor
         dialogue_processor.continueDialogue()
         self.assertTrue(self.dialogue_action.was_called)
@@ -187,7 +234,7 @@ class TestContinueDialogue(TestDialogueProcessor):
                               self.dialogue_action.call_arguments)
     
     def testReturnsValidResponses(self):
-        """Test continueDialogue returns list of valid DialogueResponses"""
+        """continueDialogue returns list of valid DialogueResponses"""
         dialogue_processor = self.dialogue_processor
         valid_responses = \
             dialogue_processor.dialogue_section_stack[0].responses
@@ -203,7 +250,7 @@ class TestContinueDialogue(TestDialogueProcessor):
 
 
 class TestGetRootDialogueSection(TestDialogueProcessor):
-    """Tests of the L{DialogueProcessor.getRootDialogueSection} method."""
+    """Tests of the L{DialogueProcessor.getDialogueGreeting} method."""
     def setUp(self):
         TestDialogueProcessor.setUp(self)
         self.dialogue_processor = DialogueProcessor(
@@ -213,10 +260,10 @@ class TestGetRootDialogueSection(TestDialogueProcessor):
         self.dialogue_processor.initiateDialogue()
     
     def testReturnsCorrectDialogueSection(self):
-        """getRootDialogueSection returns first section with true condition"""
+        """getDialogueGreeting returns first section with true condition"""
         dialogue_processor = self.dialogue_processor
         dialogue = self.dialogue
-        root_dialogue_section = dialogue_processor.getRootDialogueSection()
+        root_dialogue_section = dialogue_processor.getDialogueGreeting()
         expected_dialogue_section = dialogue.greetings[0]
         self.assertEqual(root_dialogue_section, expected_dialogue_section)
 
@@ -230,7 +277,7 @@ class TestGetCurrentDialogueSection(TestDialogueProcessor):
         self.dialogue_processor.initiateDialogue()
     
     def testReturnsCorrectDialogueSection(self):
-        """Test getCurrentDialogueSection returns section at top of stack"""
+        """getCurrentDialogueSection returns section at top of stack"""
         dialogue_processor = self.dialogue_processor
         expected_dialogue_section = self.dialogue.default_greeting
         actual_dialogue_section = \
@@ -261,7 +308,7 @@ class TestRunDialogueActions(TestDialogueProcessor):
         )
     
     def testExecutesDialogueActions(self):
-        """Test runDialogueActions correctly executes DialogueActions"""
+        """runDialogueActions correctly executes DialogueActions"""
         dialogue_processor = self.dialogue_processor
         # Case: DialogueSection
         dialogue_processor.runDialogueActions(self.dialogue_section)
@@ -287,7 +334,7 @@ class TestGetValidResponses(TestDialogueProcessor):
         self.dialogue_processor.initiateDialogue()
     
     def testReturnsValidResponses(self):
-        """Test getValidResponses returns list of valid DialogueResponses"""
+        """getValidResponses returns list of valid DialogueResponses"""
         dialogue_processor = self.dialogue_processor
         valid_responses = \
             dialogue_processor.dialogue_section_stack[0].responses
@@ -313,7 +360,7 @@ class TestReply(TestDialogueProcessor):
             self.dialogue.default_greeting.responses[3]
     
     def testRaisesExceptionWhenNotInitiated(self):
-        """Test reply raises exception when called before initiateDialogue"""
+        """reply raises exception when called before initiateDialogue"""
         dialogue_processor = self.dialogue_processor
         # Sanity check: A dialogue must not have been initiated beforehand.
         self.assertFalse(dialogue_processor.in_dialogue)
@@ -350,7 +397,7 @@ class TestReply(TestDialogueProcessor):
         )
     
     def testCorrectlyEndsDialogue(self):
-        """Test reply ends dialogue when DialogueResponse specifies 'end'"""
+        """reply ends dialogue when DialogueResponse specifies 'end'"""
         dialogue_processor = self.dialogue_processor
         dialogue_processor.initiateDialogue()
         # Sanity check: Test response must have a next_section_id of 'end'.
